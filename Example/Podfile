@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'NeoSkeuomorphKit_Example' do
+  pod 'NeoSkeuomorphKit', :path => '../'
+
+  target 'NeoSkeuomorphKit_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
