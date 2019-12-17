@@ -1,16 +1,23 @@
 PODS:
   - NeoSkeuomorphKit (0.1.0)
+  - SwiftLint (0.38.0)
 
 DEPENDENCIES:
   - NeoSkeuomorphKit (from `../`)
+  - SwiftLint
+
+SPEC REPOS:
+  trunk:
+    - SwiftLint
 
 EXTERNAL SOURCES:
   NeoSkeuomorphKit:
     :path: "../"
 
 SPEC CHECKSUMS:
-  NeoSkeuomorphKit: 1ff7d0631c1f7fa46566847b150e1f65d0f69fa2
+  NeoSkeuomorphKit: cc3cf2ead77fbdb796358194a7831591adc5d03e
+  SwiftLint: 4105f061f9812b214568b736dab580ab2c73a582
 
-PODFILE CHECKSUM: 941bb94899f8989bb773a949e813ede4c97d3331
+PODFILE CHECKSUM: 5be8f6119966d326ed89cb50bbd118d546451ea0
 
 COCOAPODS: 1.8.4

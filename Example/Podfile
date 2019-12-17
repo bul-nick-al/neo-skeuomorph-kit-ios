@@ -2,6 +2,7 @@ use_frameworks!
 
 target 'NeoSkeuomorphKit_Example' do
   pod 'NeoSkeuomorphKit', :path => '../'
+  pod 'SwiftLint'
 
   target 'NeoSkeuomorphKit_Tests' do
     inherit! :search_paths
