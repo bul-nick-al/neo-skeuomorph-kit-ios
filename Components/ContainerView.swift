@@ -1,5 +1,19 @@
 import UIKit
 
+/**
+ # Example of usage
+ ```
+ let childView = UIView(frame: CGRect(x: 0, y: 0, width: 150, height: 280))
+ childView.backgroundColor = UIColor(red: 227.0/255.0, green: 237.0/255.0, blue: 247.0/255.0, alpha: 1.0)
+ childView.layer.cornerRadius = 40
+ 
+ let myCont = ContainerView( )
+ myCont.child = childView
+ myCont.elevation = 5
+ 
+ view.addSubview(myCont)
+ ```
+ */
 public class ContainerView: UIView {
     let darkSideColor: UIColor = UIColor(red: 0.53, green: 0.65, blue: 0.75, alpha: 0.48)
     let brightSideColor: UIColor = .white
@@ -12,10 +26,12 @@ public class ContainerView: UIView {
         didSet {
             oldValue?.removeFromSuperview()
             if let child = child {
-                center = child.center
-                bounds = child.bounds
-                layer.sublayers?.forEach{$0.frame = frame}
+                layer.addSublayer(outerBrightSide)
+                layer.addSublayer(outerDarkSide)
+                layer.addSublayer(surface)
                 addSubview(child)
+                child.layer.addSublayer(innerDarkSide)
+                child.layer.addSublayer(innerBrightSide)
             }
             setNeedsLayout()
         }
@@ -26,11 +42,19 @@ public class ContainerView: UIView {
             return elevation >= 0
         }
     }
+    
+    /**
+     Indicates to what extend the view will look above the surface or carved into the surface
+     
+     - parameter elevation: positive value for the efffect of levitation and negative value for the effect of being carved
+     - warning: for good visibility stick to values from -50 to 50
+     */
     public var elevation: Float = 0 {
         didSet {
             setNeedsLayout()
         }
     }
+    
     public var cornerRadius: Float {
         get {
             return Float(child?.layer.cornerRadius ?? surface.cornerRadius)
@@ -48,40 +72,40 @@ public class ContainerView: UIView {
             surface.backgroundColor = backgroundColor?.cgColor
         }
     }
+    
     private var surface: CALayer = {
         let surface = CALayer()
         surface.backgroundColor =  UIColor(red: 227.0/255.0, green: 237.0/255.0, blue: 247.0/255.0, alpha: 1.0).cgColor
         return surface
     }()
-    private var darkSide: CALayer {
-        get {
-            if isConvex {
-                outerDarkSide.shadowPath = UIBezierPath(roundedRect: layer.bounds, cornerRadius: CGFloat(cornerRadius)).cgPath
-                outerDarkSide.shadowOffset = CGSize(width:  CGFloat(elevation) / 2, height:  CGFloat(elevation) / 4)
-                outerDarkSide.shadowRadius = CGFloat(elevation)
-                return outerDarkSide
-            } else {
-                innerDarkSide.path = makeInnerUpperShadowShapePath(rect: bounds, radius: CGFloat(cornerRadius))
-                innerDarkSide.shadowOffset = CGSize(width: -CGFloat(elevation) / 2, height: -CGFloat(elevation) / 4)
-                innerDarkSide.shadowRadius = CGFloat(-elevation)
-                return innerDarkSide
-            }
+    
+    private func updateDarkSide() {
+        if isConvex {
+            outerDarkSide.shadowPath = UIBezierPath(roundedRect: layer.bounds, cornerRadius: CGFloat(cornerRadius)).cgPath
+            outerDarkSide.shadowOffset = CGSize(width:  CGFloat(elevation) / 2, height:  CGFloat(elevation) / 4)
+            outerDarkSide.shadowRadius = CGFloat(elevation)
+        } else {
+            innerDarkSide.path = makeInnerUpperShadowShapePath(rect: bounds, radius: CGFloat(cornerRadius))
+            innerDarkSide.shadowOffset = CGSize(width: -CGFloat(elevation) / 2, height: -CGFloat(elevation) / 4)
+            innerDarkSide.shadowRadius = CGFloat(-elevation)
         }
     }
-    private var brightSide: CALayer {
-        get {
-            if isConvex {
-                outerBrightSide.shadowPath = UIBezierPath(roundedRect: layer.bounds, cornerRadius: CGFloat(cornerRadius)).cgPath
-                outerBrightSide.shadowOffset = CGSize(width: -CGFloat(elevation) / 2, height: -CGFloat(elevation) / 4)
-                outerBrightSide.shadowRadius = CGFloat(elevation)
-                return outerBrightSide
-            } else {
-                innerBrightSide.path = makeInnerLowerShadowShapePath(rect: bounds, radius: CGFloat(cornerRadius))
-                innerBrightSide.shadowOffset = CGSize(width:  CGFloat(elevation) / 2, height:  CGFloat(elevation) / 4)
-                innerBrightSide.shadowRadius = CGFloat(-elevation)
-                return innerBrightSide
-            }
+    
+    private func updateBrightSide() {
+        if isConvex {
+            outerBrightSide.shadowPath = UIBezierPath(roundedRect: layer.bounds, cornerRadius: CGFloat(cornerRadius)).cgPath
+            outerBrightSide.shadowOffset = CGSize(width: -CGFloat(elevation) / 2, height: -CGFloat(elevation) / 4)
+            outerBrightSide.shadowRadius = CGFloat(elevation)
+        } else {
+            innerBrightSide.path = makeInnerLowerShadowShapePath(rect: bounds, radius: CGFloat(cornerRadius))
+            innerBrightSide.shadowOffset = CGSize(width:  CGFloat(elevation) / 2, height:  CGFloat(elevation) / 4)
+            innerBrightSide.shadowRadius = CGFloat(-elevation)
         }
+    }
+    
+    private func updateSurface() {
+        surface.frame = bounds
+        surface.cornerRadius = CGFloat(cornerRadius)
     }
     
     /**
@@ -147,7 +171,7 @@ public class ContainerView: UIView {
                     endAngle: 3/4 * .pi, clockwise: true)
         return path
     }
-    
+ 
     private func makeInnerUpperShadowShapePath(rect: CGRect, radius: CGFloat) -> CGPath {
         let path = makeInnerShadowShapePathFor(rect: rect, withCornerRadius: radius)
         var transform = CGAffineTransform(translationX: -1, y: -1)
@@ -161,33 +185,26 @@ public class ContainerView: UIView {
     }
     
     private func updateView() {
+        updateDarkSide()
+        updateBrightSide()
+        updateSurface()
         if isConvex {
-            innerDarkSide.removeFromSuperlayer()
-            innerBrightSide.removeFromSuperlayer()
-            layer.mask = nil
-            layer.addSublayer(darkSide)
-            layer.addSublayer(brightSide)
-            layer.addSublayer(surface)
+            outerDarkSide.isHidden = false
+            outerBrightSide.isHidden = false
+            innerBrightSide.isHidden = true
+            innerDarkSide.isHidden = true
+            child?.layer.mask = nil
         } else {
-            outerDarkSide.removeFromSuperlayer()
-            outerBrightSide.removeFromSuperlayer()
+            outerDarkSide.isHidden = true
+            outerBrightSide.isHidden = true
+            innerBrightSide.isHidden = false
+            innerDarkSide.isHidden = false
             let maskLayer = CAShapeLayer()
             maskLayer.path = UIBezierPath(roundedRect: bounds, cornerRadius: CGFloat(cornerRadius)).cgPath
-            layer.addSublayer(surface)
-            if let child = child {
-                child.layer.mask = maskLayer
-                child.layer.addSublayer(darkSide)
-                child.layer.addSublayer(brightSide)
-                addSubview(child)
-                
-            } else {
-                layer.mask = maskLayer
-                layer.addSublayer(darkSide)
-                layer.addSublayer(brightSide)
-            }
+            child?.layer.mask = maskLayer
         }
     }
-
+    
     override public func layoutSubviews() {
         super.layoutSubviews()
         updateView()

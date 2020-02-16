@@ -36,20 +36,16 @@ class ViewController: UIViewController {
             slider.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
             slider.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor)
         ])
-        let myCont = ContainerView()
-        myCont.cornerRadius = 40
+
+        let myCont = ContainerView(frame: CGRect(x: 80, y: 80, width: 150, height: 280))
         myCont.translatesAutoresizingMaskIntoConstraints = false
-        let childView = UIView(frame: CGRect(x: 40, y: 40, width: 150, height: 280))
-        childView.backgroundColor = .green
+
+        let childView = UIView(frame: CGRect(x: 0, y: 0, width: 150, height: 280))
+        childView.backgroundColor = UIColor(red: 227.0/255.0, green: 237.0/255.0, blue: 247.0/255.0, alpha: 1.0)
+        childView.layer.cornerRadius = 40
+
         myCont.child = childView
         view.addSubview(myCont)
-//        NSLayoutConstraint.activate([
-//            myCont.widthAnchor.constraint(equalToConstant: 200),
-//            myCont.heightAnchor.constraint(equalToConstant: 200),
-//            myCont.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-//            myCont.centerXAnchor.constraint(equalTo: view.centerXAnchor)
-//        ])
-        // Do any additional setup after loading the view, typically from a nib.
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
