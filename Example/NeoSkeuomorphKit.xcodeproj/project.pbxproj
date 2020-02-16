@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		034742CE23F1DBFE00163462 /* Pods_NeoSkeuomorphKit_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A87DDD8416104ED0A95DE45 /* Pods_NeoSkeuomorphKit_Example.framework */; };
+		034742CF23F1DBFE00163462 /* Pods_NeoSkeuomorphKit_Example.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9A87DDD8416104ED0A95DE45 /* Pods_NeoSkeuomorphKit_Example.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACD81AFB9204008FA782 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* ViewController.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
@@ -14,7 +16,6 @@
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		85659E1192019579FFB25676 /* Pods_NeoSkeuomorphKit_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3E2C41327583611C6C62378 /* Pods_NeoSkeuomorphKit_Tests.framework */; };
-		ABE5A22B5CC255DD41D85E4F /* Pods_NeoSkeuomorphKit_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A87DDD8416104ED0A95DE45 /* Pods_NeoSkeuomorphKit_Example.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -26,6 +27,20 @@
 			remoteInfo = NeoSkeuomorphKit;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		034742D023F1DBFE00163462 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				034742CF23F1DBFE00163462 /* Pods_NeoSkeuomorphKit_Example.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		39B97F9B5096BB61E34960FD /* NeoSkeuomorphKit.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = NeoSkeuomorphKit.podspec; path = ../NeoSkeuomorphKit.podspec; sourceTree = "<group>"; };
@@ -54,7 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ABE5A22B5CC255DD41D85E4F /* Pods_NeoSkeuomorphKit_Example.framework in Frameworks */,
+				034742CE23F1DBFE00163462 /* Pods_NeoSkeuomorphKit_Example.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -172,6 +187,7 @@
 				607FACCE1AFB9204008FA782 /* Resources */,
 				A1BDEB416ED2245977AFF6FB /* [CP] Embed Pods Frameworks */,
 				0377F86C23A8DD3F00940AD4 /* ShellScript */,
+				034742D023F1DBFE00163462 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -533,7 +549,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A75DB579437F1422D51042E6 /* Pods-NeoSkeuomorphKit_Tests.debug.xcconfig */;
 			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				DEVELOPMENT_TEAM = 2ZCLG4KKN6;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
@@ -556,7 +573,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6E493DDA5FEE5BBF6D3BAF99 /* Pods-NeoSkeuomorphKit_Tests.release.xcconfig */;
 			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				DEVELOPMENT_TEAM = 2ZCLG4KKN6;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
