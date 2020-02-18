@@ -15,12 +15,51 @@ import UIKit
  ```
  */
 public class ContainerView: UIView {
-    let darkSideColor: UIColor = UIColor(red: 0.53, green: 0.65, blue: 0.75, alpha: 0.48)
-    let brightSideColor: UIColor = .white
-    lazy private var outerBrightSide: CALayer = getOuterSide(color: brightSideColor)
-    lazy private var outerDarkSide: CALayer = getOuterSide(color: darkSideColor)
-    lazy private var innerBrightSide: CAShapeLayer = getInnerSide(color: brightSideColor)
-    lazy private var innerDarkSide: CAShapeLayer = getInnerSide(color: darkSideColor.withAlphaComponent(1.0))
+
+    public enum Elevation {
+        case convexHigh
+        case convexMedium
+        case convexLow
+        case convexSlightly
+        case flat
+        case concaveSlightly
+        case concaveLow
+        case concaveMedium
+        case concaveHigh
+        case custom(elevation: CGFloat)
+
+        var elevationValue: CGFloat {
+            switch self {
+            case .convexHigh:
+                return 50
+            case .convexMedium:
+                return 30
+            case .convexLow:
+                return 15
+            case .convexSlightly:
+                return 5
+            case .flat:
+                return 0
+            case .concaveSlightly:
+                return -5
+            case .concaveLow:
+                return -15
+            case .concaveMedium:
+                return -30
+            case .concaveHigh:
+                return -50
+            case .custom(let elevation):
+                return elevation
+            }
+        }
+    }
+
+    public let darkSideColor = UIColor(red: 0.53, green: 0.65, blue: 0.75, alpha: 0.48)
+    let brightSideColor = UIColor.white
+    lazy private var outerBrightSide = getOuterSide(color: brightSideColor)
+    lazy private var outerDarkSide = getOuterSide(color: darkSideColor)
+    lazy private var innerBrightSide = getInnerSide(color: brightSideColor)
+    lazy private var innerDarkSide = getInnerSide(color: darkSideColor.withAlphaComponent(1.0))
     
     weak public var child: UIView? {
         didSet {
@@ -30,16 +69,25 @@ public class ContainerView: UIView {
                 layer.addSublayer(outerDarkSide)
                 layer.addSublayer(surface)
                 addSubview(child)
-                child.layer.addSublayer(innerDarkSide)
-                child.layer.addSublayer(innerBrightSide)
+                layer.addSublayer(innerDarkSide)
+                layer.addSublayer(innerBrightSide)
+
+                child.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    child.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+                    child.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+                    child.topAnchor.constraint(equalTo: self.topAnchor),
+                    child.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+                    child.widthAnchor.constraint(equalTo: widthAnchor)
+                ])
             }
             setNeedsLayout()
         }
     }
     
-    var isConvex: Bool {
+    public var isConvex: Bool {
         get {
-            return elevation >= 0
+            return elevation > 0
         }
     }
     
@@ -49,7 +97,7 @@ public class ContainerView: UIView {
      - parameter elevation: positive value for the efffect of levitation and negative value for the effect of being carved
      - warning: for good visibility stick to values from -50 to 50
      */
-    public var elevation: Float = 0 {
+    public var elevation: CGFloat = 0 {
         didSet {
             setNeedsLayout()
         }
@@ -73,33 +121,33 @@ public class ContainerView: UIView {
         }
     }
     
-    private var surface: CALayer = {
+    lazy private var surface: CALayer = {
         let surface = CALayer()
-        surface.backgroundColor =  UIColor(red: 227.0/255.0, green: 237.0/255.0, blue: 247.0/255.0, alpha: 1.0).cgColor
+        surface.backgroundColor = backgroundColor?.cgColor
         return surface
     }()
     
     private func updateDarkSide() {
         if isConvex {
             outerDarkSide.shadowPath = UIBezierPath(roundedRect: layer.bounds, cornerRadius: CGFloat(cornerRadius)).cgPath
-            outerDarkSide.shadowOffset = CGSize(width:  CGFloat(elevation) / 2, height:  CGFloat(elevation) / 4)
-            outerDarkSide.shadowRadius = CGFloat(elevation)
+            outerDarkSide.shadowOffset = CGSize(width:  elevation / 2, height: elevation / 4)
+            outerDarkSide.shadowRadius = elevation
         } else {
             innerDarkSide.path = makeInnerUpperShadowShapePath(rect: bounds, radius: CGFloat(cornerRadius))
-            innerDarkSide.shadowOffset = CGSize(width: -CGFloat(elevation) / 2, height: -CGFloat(elevation) / 4)
-            innerDarkSide.shadowRadius = CGFloat(-elevation)
+            innerDarkSide.shadowOffset = CGSize(width: -elevation / 2, height: -elevation / 4)
+            innerDarkSide.shadowRadius = -elevation
         }
     }
     
     private func updateBrightSide() {
         if isConvex {
             outerBrightSide.shadowPath = UIBezierPath(roundedRect: layer.bounds, cornerRadius: CGFloat(cornerRadius)).cgPath
-            outerBrightSide.shadowOffset = CGSize(width: -CGFloat(elevation) / 2, height: -CGFloat(elevation) / 4)
+            outerBrightSide.shadowOffset = CGSize(width: -elevation / 2, height: -elevation / 4)
             outerBrightSide.shadowRadius = CGFloat(elevation)
         } else {
             innerBrightSide.path = makeInnerLowerShadowShapePath(rect: bounds, radius: CGFloat(cornerRadius))
-            innerBrightSide.shadowOffset = CGSize(width:  CGFloat(elevation) / 2, height:  CGFloat(elevation) / 4)
-            innerBrightSide.shadowRadius = CGFloat(-elevation)
+            innerBrightSide.shadowOffset = CGSize(width:  elevation / 2, height:  elevation / 4)
+            innerBrightSide.shadowRadius = -elevation
         }
     }
     
@@ -188,20 +236,23 @@ public class ContainerView: UIView {
         updateDarkSide()
         updateBrightSide()
         updateSurface()
+        if innerBrightSide.isHidden == true && innerDarkSide.isHidden == true {
+            layer.mask = nil
+        } else {
+            let maskLayer = CAShapeLayer()
+            maskLayer.path = UIBezierPath(roundedRect: bounds, cornerRadius: CGFloat(cornerRadius)).cgPath
+            layer.mask = maskLayer
+        }
         if isConvex {
             outerDarkSide.isHidden = false
             outerBrightSide.isHidden = false
             innerBrightSide.isHidden = true
             innerDarkSide.isHidden = true
-            child?.layer.mask = nil
         } else {
             outerDarkSide.isHidden = true
             outerBrightSide.isHidden = true
             innerBrightSide.isHidden = false
             innerDarkSide.isHidden = false
-            let maskLayer = CAShapeLayer()
-            maskLayer.path = UIBezierPath(roundedRect: bounds, cornerRadius: CGFloat(cornerRadius)).cgPath
-            child?.layer.mask = maskLayer
         }
     }
     

@@ -11,7 +11,8 @@ import NeoSkeuomorphKit
 class ViewController: UIViewController {
    @objc func changeShadow(_ sender: UISlider) {
         for child in view.subviews {
-            (child as? ContainerView)?.elevation = sender.value
+            (child as? ContainerView)?.elevation = CGFloat(sender.value)
+            print(sender.value)
         }
     }
 
@@ -43,9 +44,24 @@ class ViewController: UIViewController {
         let childView = UIView(frame: CGRect(x: 0, y: 0, width: 150, height: 280))
         childView.backgroundColor = UIColor(red: 227.0/255.0, green: 237.0/255.0, blue: 247.0/255.0, alpha: 1.0)
         childView.layer.cornerRadius = 40
+        view.addSubview(myCont)
+        NSLayoutConstraint.activate([
+            myCont.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            myCont.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            myCont.heightAnchor.constraint(equalToConstant: 250),
+            myCont.widthAnchor.constraint(equalToConstant: 250)
+        ])
 
         myCont.child = childView
-        view.addSubview(myCont)
+
+//        NSLayoutConstraint.activate([
+//            childView.trailingAnchor.constraint(equalTo: myCont.trailingAnchor),
+//            childView.leadingAnchor.constraint(equalTo: myCont.leadingAnchor),
+//            childView.topAnchor.constraint(equalTo: myCont.topAnchor),
+//            childView.bottomAnchor.constraint(equalTo: myCont.bottomAnchor),
+//            childView.widthAnchor.constraint(equalTo: myCont.widthAnchor)
+//        ])
+
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
