@@ -28,7 +28,7 @@ public class ContainerView: UIView {
         case concaveHigh
         case custom(elevation: CGFloat)
 
-        var elevationValue: CGFloat {
+        public var elevationValue: CGFloat {
             switch self {
             case .convexHigh:
                 return 50
@@ -53,13 +53,20 @@ public class ContainerView: UIView {
             }
         }
     }
-
+// MARK: Colors
     public let darkSideColor = UIColor(red: 0.53, green: 0.65, blue: 0.75, alpha: 0.48)
     let brightSideColor = UIColor.white
+
+// MARK:Layers
     lazy private var outerBrightSide = getOuterSide(color: brightSideColor)
     lazy private var outerDarkSide = getOuterSide(color: darkSideColor)
     lazy private var innerBrightSide = getInnerSide(color: brightSideColor)
     lazy private var innerDarkSide = getInnerSide(color: darkSideColor.withAlphaComponent(1.0))
+    lazy private var surface: CALayer = {
+        let surface = CALayer()
+        surface.backgroundColor = backgroundColor?.cgColor
+        return surface
+    }()
     
     weak public var child: UIView? {
         didSet {
@@ -84,10 +91,11 @@ public class ContainerView: UIView {
             setNeedsLayout()
         }
     }
-    
+
+//MARK: Properties
     public var isConvex: Bool {
         get {
-            return elevation > 0
+            return elevation.elevationValue > 0
         }
     }
     
@@ -97,7 +105,7 @@ public class ContainerView: UIView {
      - parameter elevation: positive value for the efffect of levitation and negative value for the effect of being carved
      - warning: for good visibility stick to values from -50 to 50
      */
-    public var elevation: CGFloat = 0 {
+    public var elevation: Elevation = .flat {
         didSet {
             setNeedsLayout()
         }
@@ -120,42 +128,9 @@ public class ContainerView: UIView {
             surface.backgroundColor = backgroundColor?.cgColor
         }
     }
-    
-    lazy private var surface: CALayer = {
-        let surface = CALayer()
-        surface.backgroundColor = backgroundColor?.cgColor
-        return surface
-    }()
-    
-    private func updateDarkSide() {
-        if isConvex {
-            outerDarkSide.shadowPath = UIBezierPath(roundedRect: layer.bounds, cornerRadius: CGFloat(cornerRadius)).cgPath
-            outerDarkSide.shadowOffset = CGSize(width:  elevation / 2, height: elevation / 4)
-            outerDarkSide.shadowRadius = elevation
-        } else {
-            innerDarkSide.path = makeInnerUpperShadowShapePath(rect: bounds, radius: CGFloat(cornerRadius))
-            innerDarkSide.shadowOffset = CGSize(width: -elevation / 2, height: -elevation / 4)
-            innerDarkSide.shadowRadius = -elevation
-        }
-    }
-    
-    private func updateBrightSide() {
-        if isConvex {
-            outerBrightSide.shadowPath = UIBezierPath(roundedRect: layer.bounds, cornerRadius: CGFloat(cornerRadius)).cgPath
-            outerBrightSide.shadowOffset = CGSize(width: -elevation / 2, height: -elevation / 4)
-            outerBrightSide.shadowRadius = CGFloat(elevation)
-        } else {
-            innerBrightSide.path = makeInnerLowerShadowShapePath(rect: bounds, radius: CGFloat(cornerRadius))
-            innerBrightSide.shadowOffset = CGSize(width:  elevation / 2, height:  elevation / 4)
-            innerBrightSide.shadowRadius = -elevation
-        }
-    }
-    
-    private func updateSurface() {
-        surface.frame = bounds
-        surface.cornerRadius = CGFloat(cornerRadius)
-    }
-    
+
+
+//MARK:Auxiliary
     /**
      Get a layer to be used as the outer side of a container view
      
@@ -231,24 +206,55 @@ public class ContainerView: UIView {
         transform = transform.rotated(by: .pi)
         return path.copy(using: &transform)!
     }
+
+//MARK:Updating functions
+    private func updateDarkSide() {
+        if isConvex {
+            outerDarkSide.shadowPath = UIBezierPath(roundedRect: layer.bounds, cornerRadius: CGFloat(cornerRadius)).cgPath
+            outerDarkSide.shadowOffset = CGSize(width:  elevation.elevationValue / 2, height: elevation.elevationValue / 4)
+            outerDarkSide.shadowRadius = elevation.elevationValue
+        } else {
+            innerDarkSide.path = makeInnerUpperShadowShapePath(rect: bounds, radius: CGFloat(cornerRadius))
+            innerDarkSide.shadowOffset = CGSize(width: -elevation.elevationValue / 2, height: -elevation.elevationValue / 4)
+            innerDarkSide.shadowRadius = -elevation.elevationValue
+        }
+    }
+
+    private func updateBrightSide() {
+        if isConvex {
+            outerBrightSide.shadowPath = UIBezierPath(roundedRect: layer.bounds, cornerRadius: CGFloat(cornerRadius)).cgPath
+            outerBrightSide.shadowOffset = CGSize(width: -elevation.elevationValue / 2, height: -elevation.elevationValue / 4)
+            outerBrightSide.shadowRadius = CGFloat(elevation.elevationValue)
+        } else {
+            innerBrightSide.path = makeInnerLowerShadowShapePath(rect: bounds, radius: CGFloat(cornerRadius))
+            innerBrightSide.shadowOffset = CGSize(width:  elevation.elevationValue / 2, height:  elevation.elevationValue / 4)
+            innerBrightSide.shadowRadius = -elevation.elevationValue
+        }
+    }
+
+    private func updateSurface() {
+        surface.frame = bounds
+        surface.cornerRadius = CGFloat(cornerRadius)
+    }
     
     private func updateView() {
         updateDarkSide()
         updateBrightSide()
         updateSurface()
-        if innerBrightSide.isHidden == true && innerDarkSide.isHidden == true {
-            layer.mask = nil
-        } else {
-            let maskLayer = CAShapeLayer()
-            maskLayer.path = UIBezierPath(roundedRect: bounds, cornerRadius: CGFloat(cornerRadius)).cgPath
-            layer.mask = maskLayer
-        }
         if isConvex {
             outerDarkSide.isHidden = false
             outerBrightSide.isHidden = false
             innerBrightSide.isHidden = true
             innerDarkSide.isHidden = true
+            // to make sure that once the maked is removed
+            // users won't see the layers disappearing with animation
+            innerDarkSide.removeAllAnimations()
+            innerBrightSide.removeAllAnimations()
+            layer.mask = nil
         } else {
+            let maskLayer = CAShapeLayer()
+            maskLayer.path = UIBezierPath(roundedRect: bounds, cornerRadius: CGFloat(cornerRadius)).cgPath
+            layer.mask = maskLayer
             outerDarkSide.isHidden = true
             outerBrightSide.isHidden = true
             innerBrightSide.isHidden = false

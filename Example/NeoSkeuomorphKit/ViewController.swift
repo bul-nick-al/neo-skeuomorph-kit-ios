@@ -11,8 +11,37 @@ import NeoSkeuomorphKit
 class ViewController: UIViewController {
    @objc func changeShadow(_ sender: UISlider) {
         for child in view.subviews {
-            (child as? ContainerView)?.elevation = CGFloat(sender.value)
-            print(sender.value)
+            (child as? ContainerView)?.cornerRadius = Float(sender.value)
+        }
+    }
+
+    @objc func changeShadowFromSegment(_ sender: UISegmentedControl) {
+        func getEl(index: Int) -> ContainerView.Elevation {
+            switch index {
+            case 0:
+                return .concaveHigh
+            case 1:
+                return .concaveMedium
+            case 2:
+                return .concaveLow
+            case 3:
+                return .concaveSlightly
+            case 4:
+                return .flat
+            case 5:
+                return .convexSlightly
+            case 6:
+                return .convexLow
+            case 7:
+                return .convexMedium
+            case 8:
+                return .convexHigh
+            default:
+                return .flat
+            }
+        }
+        for child in view.subviews {
+            (child as? ContainerView)?.elevation = getEl(index: sender.selectedSegmentIndex)
         }
     }
 
@@ -31,11 +60,21 @@ class ViewController: UIViewController {
         slider.minimumValue = -50
         slider.translatesAutoresizingMaskIntoConstraints = false
         slider.addTarget(self, action: #selector(self.changeShadow(_:)), for: .valueChanged)
+        let segments = UISegmentedControl(items: ["-4", "-3", "-2", "-1", "0", "1", "2", "3", "4"])
+        segments.translatesAutoresizingMaskIntoConstraints = false
+        segments.selectedSegmentIndex = 4
+        segments.addTarget(self, action: #selector(self.changeShadowFromSegment(_:)), for: .valueChanged)
+        view.addSubview(segments)
         view.addSubview(slider)
+        NSLayoutConstraint.activate([
+            segments.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            segments.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            segments.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor)
+        ])
         NSLayoutConstraint.activate([
             slider.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
             slider.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            slider.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor)
+            slider.bottomAnchor.constraint(equalTo: segments.topAnchor)
         ])
 
         let myCont = ContainerView(frame: CGRect(x: 80, y: 80, width: 150, height: 280))
