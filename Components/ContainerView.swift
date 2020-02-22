@@ -14,7 +14,23 @@ import UIKit
  view.addSubview(myCont)
  ```
  */
-public class ContainerView: UIView {
+public class ContainerView: UIView, MyCALayerDelegate {
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    public override init(frame: CGRect) {
+        super.init(frame: frame)
+        (self.layer as! MyCALayer).myDelegate = self
+    }
+
+    public override class var layerClass: AnyClass {
+        return MyCALayer.self
+    }
+    func cornerRadiusChanged() {
+        setNeedsLayout()
+    }
+
 
     public enum Elevation {
         case convexHigh
@@ -111,17 +127,17 @@ public class ContainerView: UIView {
         }
     }
     
-    public var cornerRadius: Float {
-        get {
-            return Float(child?.layer.cornerRadius ?? surface.cornerRadius)
-        }
-        set(value) {
-            surface.cornerRadius = CGFloat(value)
-            layer.cornerRadius = CGFloat(value)
-            child?.layer.cornerRadius = CGFloat(value)
-            setNeedsLayout()
-        }
-    }
+//    public var cornerRadius: Float {
+//        get {
+//            return Float(child?.layer.cornerRadius ?? surface.cornerRadius)
+//        }
+//        set(value) {
+//            surface.cornerRadius = CGFloat(value)
+//            layer.cornerRadius = CGFloat(value)
+//            child?.layer.cornerRadius = CGFloat(value)
+//            setNeedsLayout()
+//        }
+//    }
 
     public override var backgroundColor: UIColor? {
         didSet {
@@ -210,11 +226,11 @@ public class ContainerView: UIView {
 //MARK:Updating functions
     private func updateDarkSide() {
         if isConvex {
-            outerDarkSide.shadowPath = UIBezierPath(roundedRect: layer.bounds, cornerRadius: CGFloat(cornerRadius)).cgPath
+            outerDarkSide.shadowPath = UIBezierPath(roundedRect: layer.bounds, cornerRadius: layer.cornerRadius).cgPath
             outerDarkSide.shadowOffset = CGSize(width:  elevation.elevationValue / 2, height: elevation.elevationValue / 4)
             outerDarkSide.shadowRadius = elevation.elevationValue
         } else {
-            innerDarkSide.path = makeInnerUpperShadowShapePath(rect: bounds, radius: CGFloat(cornerRadius))
+            innerDarkSide.path = makeInnerUpperShadowShapePath(rect: bounds, radius: layer.cornerRadius)
             innerDarkSide.shadowOffset = CGSize(width: -elevation.elevationValue / 2, height: -elevation.elevationValue / 4)
             innerDarkSide.shadowRadius = -elevation.elevationValue
         }
@@ -222,11 +238,11 @@ public class ContainerView: UIView {
 
     private func updateBrightSide() {
         if isConvex {
-            outerBrightSide.shadowPath = UIBezierPath(roundedRect: layer.bounds, cornerRadius: CGFloat(cornerRadius)).cgPath
+            outerBrightSide.shadowPath = UIBezierPath(roundedRect: layer.bounds, cornerRadius: layer.cornerRadius).cgPath
             outerBrightSide.shadowOffset = CGSize(width: -elevation.elevationValue / 2, height: -elevation.elevationValue / 4)
             outerBrightSide.shadowRadius = CGFloat(elevation.elevationValue)
         } else {
-            innerBrightSide.path = makeInnerLowerShadowShapePath(rect: bounds, radius: CGFloat(cornerRadius))
+            innerBrightSide.path = makeInnerLowerShadowShapePath(rect: bounds, radius: layer.cornerRadius)
             innerBrightSide.shadowOffset = CGSize(width:  elevation.elevationValue / 2, height:  elevation.elevationValue / 4)
             innerBrightSide.shadowRadius = -elevation.elevationValue
         }
@@ -234,13 +250,14 @@ public class ContainerView: UIView {
 
     private func updateSurface() {
         surface.frame = bounds
-        surface.cornerRadius = CGFloat(cornerRadius)
+        surface.cornerRadius = layer.cornerRadius
     }
     
     private func updateView() {
         updateDarkSide()
         updateBrightSide()
         updateSurface()
+        child?.layer.cornerRadius = layer.cornerRadius
         if isConvex {
             outerDarkSide.isHidden = false
             outerBrightSide.isHidden = false
@@ -253,7 +270,7 @@ public class ContainerView: UIView {
             layer.mask = nil
         } else {
             let maskLayer = CAShapeLayer()
-            maskLayer.path = UIBezierPath(roundedRect: bounds, cornerRadius: CGFloat(cornerRadius)).cgPath
+            maskLayer.path = UIBezierPath(roundedRect: bounds, cornerRadius: layer.cornerRadius).cgPath
             layer.mask = maskLayer
             outerDarkSide.isHidden = true
             outerBrightSide.isHidden = true
@@ -264,6 +281,24 @@ public class ContainerView: UIView {
     
     override public func layoutSubviews() {
         super.layoutSubviews()
+
         updateView()
     }
 }
+
+protocol MyCALayerDelegate: class {
+    func cornerRadiusChanged()
+}
+
+class MyCALayer: CALayer {
+
+    weak var myDelegate: MyCALayerDelegate?
+
+    override var cornerRadius: CGFloat {
+        didSet {
+            myDelegate?.cornerRadiusChanged()
+        }
+    }
+}
+
+

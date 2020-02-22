@@ -11,7 +11,7 @@ import NeoSkeuomorphKit
 class ViewController: UIViewController {
    @objc func changeShadow(_ sender: UISlider) {
         for child in view.subviews {
-            (child as? ContainerView)?.cornerRadius = Float(sender.value)
+            (child as? ContainerView)?.layer.cornerRadius = CGFloat(Float(sender.value))
         }
     }
 
