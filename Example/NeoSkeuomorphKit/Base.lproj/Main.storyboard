@@ -37,7 +37,7 @@
             </objects>
             <point key="canvasLocation" x="410" y="368"/>
         </scene>
-        <!--Root View Controller-->
+        <!--Components-->
         <scene sceneID="vz1-LR-5Bm">
             <objects>
                 <tableViewController clearsSelectionOnViewWillAppear="NO" id="1XK-a8-8Ft" customClass="MasterViewController" customModule="NeoSkeuomorphKit_Example" customModuleProvider="target" sceneMemberID="viewController">
@@ -76,7 +76,7 @@
                             <outlet property="delegate" destination="1XK-a8-8Ft" id="yPc-R9-ZyA"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Root View Controller" id="PDw-OC-QGc"/>
+                    <navigationItem key="navigationItem" title="Components" id="PDw-OC-QGc"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lTb-m5-hxd" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
