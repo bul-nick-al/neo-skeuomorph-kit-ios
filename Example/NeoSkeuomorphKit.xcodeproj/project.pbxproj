@@ -10,6 +10,7 @@
 		0360A6F62401BA8E00DC49FE /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0360A6F52401BA8E00DC49FE /* MasterViewController.swift */; };
 		0360A6F82401D6E100DC49FE /* DetailViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0360A6F72401D6E100DC49FE /* DetailViewManager.swift */; };
 		0360A6FA2401D76D00DC49FE /* UIViewController+SizeChange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0360A6F92401D76D00DC49FE /* UIViewController+SizeChange.swift */; };
+		03DAA05B2401DEA400C77CCE /* ExampleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DAA05A2401DEA400C77CCE /* ExampleViewController.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
@@ -33,6 +34,7 @@
 		0360A6F52401BA8E00DC49FE /* MasterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterViewController.swift; sourceTree = "<group>"; };
 		0360A6F72401D6E100DC49FE /* DetailViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewManager.swift; sourceTree = "<group>"; };
 		0360A6F92401D76D00DC49FE /* UIViewController+SizeChange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+SizeChange.swift"; sourceTree = "<group>"; };
+		03DAA05A2401DEA400C77CCE /* ExampleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleViewController.swift; sourceTree = "<group>"; };
 		39B97F9B5096BB61E34960FD /* NeoSkeuomorphKit.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = NeoSkeuomorphKit.podspec; path = ../NeoSkeuomorphKit.podspec; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* NeoSkeuomorphKit_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NeoSkeuomorphKit_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -73,6 +75,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		03DAA0572401DDEF00C77CCE /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				03DAA05A2401DEA400C77CCE /* ExampleViewController.swift */,
+			);
+			path = "View Controllers";
+			sourceTree = "<group>";
+		};
 		41184A74DE9D0922FAF02E5B /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -117,6 +127,7 @@
 		607FACD21AFB9204008FA782 /* Example for NeoSkeuomorphKit */ = {
 			isa = PBXGroup;
 			children = (
+				03DAA0572401DDEF00C77CCE /* View Controllers */,
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
@@ -361,6 +372,7 @@
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				0360A6F82401D6E100DC49FE /* DetailViewManager.swift in Sources */,
 				0360A6FA2401D76D00DC49FE /* UIViewController+SizeChange.swift in Sources */,
+				03DAA05B2401DEA400C77CCE /* ExampleViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -21,7 +21,7 @@ class MasterViewController: UITableViewController {
 
     var exampleList = [
         // This is a list of examples offered by this sample.
-        Example(title: "Container View", subTitle: "ContainerViewController", viewcontroller: TestView.self)
+        Example(title: "Example", subTitle: "ExampleViewController", viewcontroller: ExampleViewController.self)
     ]
 
     override func viewDidLoad() {

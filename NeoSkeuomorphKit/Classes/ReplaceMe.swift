@@ -1,5 +1,5 @@
-public class TestView: UIViewController {
-    public override func viewDidLoad() {
-        view.backgroundColor = .black
+public class ExampleView: UIView {
+    public override func layoutSubviews() {
+        backgroundColor = .green
     }
 }
