@@ -14,23 +14,7 @@ import UIKit
  view.addSubview(myCont)
  ```
  */
-public class ContainerView: UIView, MyCALayerDelegate {
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
-        (self.layer as! MyCALayer).myDelegate = self
-    }
-
-    public override class var layerClass: AnyClass {
-        return MyCALayer.self
-    }
-    func cornerRadiusChanged() {
-        setNeedsLayout()
-    }
-
+public class ContainerView: UIView {
 
     public enum Elevation {
         case convexHigh
@@ -69,11 +53,12 @@ public class ContainerView: UIView, MyCALayerDelegate {
             }
         }
     }
+
 // MARK: Colors
     public let darkSideColor = UIColor(red: 0.53, green: 0.65, blue: 0.75, alpha: 0.48)
     let brightSideColor = UIColor.white
 
-// MARK:Layers
+// MARK: Layers
     lazy private var outerBrightSide = getOuterSide(color: brightSideColor)
     lazy private var outerDarkSide = getOuterSide(color: darkSideColor)
     lazy private var innerBrightSide = getInnerSide(color: brightSideColor)
@@ -83,7 +68,7 @@ public class ContainerView: UIView, MyCALayerDelegate {
         surface.backgroundColor = backgroundColor?.cgColor
         return surface
     }()
-    
+
     weak public var child: UIView? {
         didSet {
             oldValue?.removeFromSuperview()
@@ -94,7 +79,7 @@ public class ContainerView: UIView, MyCALayerDelegate {
                 addSubview(child)
                 layer.addSublayer(innerDarkSide)
                 layer.addSublayer(innerBrightSide)
-
+                // make the child be the same size as its parent
                 child.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
                     child.trailingAnchor.constraint(equalTo: self.trailingAnchor),
@@ -108,17 +93,18 @@ public class ContainerView: UIView, MyCALayerDelegate {
         }
     }
 
-//MARK: Properties
+// MARK: Properties
     public var isConvex: Bool {
         get {
             return elevation.elevationValue > 0
         }
     }
-    
+
     /**
      Indicates to what extend the view will look above the surface or carved into the surface
      
-     - parameter elevation: positive value for the efffect of levitation and negative value for the effect of being carved
+     - parameter elevation: positive value for the efffect of levitation and negative value
+     for the effect of being carved
      - warning: for good visibility stick to values from -50 to 50
      */
     public var elevation: Elevation = .flat {
@@ -126,18 +112,6 @@ public class ContainerView: UIView, MyCALayerDelegate {
             setNeedsLayout()
         }
     }
-    
-//    public var cornerRadius: Float {
-//        get {
-//            return Float(child?.layer.cornerRadius ?? surface.cornerRadius)
-//        }
-//        set(value) {
-//            surface.cornerRadius = CGFloat(value)
-//            layer.cornerRadius = CGFloat(value)
-//            child?.layer.cornerRadius = CGFloat(value)
-//            setNeedsLayout()
-//        }
-//    }
 
     public override var backgroundColor: UIColor? {
         didSet {
@@ -145,8 +119,7 @@ public class ContainerView: UIView, MyCALayerDelegate {
         }
     }
 
-
-//MARK:Auxiliary
+// MARK: Auxiliary
     /**
      Get a layer to be used as the outer side of a container view
      
@@ -159,7 +132,7 @@ public class ContainerView: UIView, MyCALayerDelegate {
         outerSide.masksToBounds = false
         return outerSide
     }
-    
+
     /**
     Get a layer to be used as the inner side of a container view
     
@@ -174,7 +147,7 @@ public class ContainerView: UIView, MyCALayerDelegate {
         innerSide.masksToBounds = false
         return innerSide
     }
-    
+
     /**
      This method creates a thick path in the shape of two adjacent sides of a round rectangle
      - parameter rect: the rectangle.
@@ -210,7 +183,7 @@ public class ContainerView: UIView, MyCALayerDelegate {
                     endAngle: 3/4 * .pi, clockwise: true)
         return path
     }
- 
+
     private func makeInnerUpperShadowShapePath(rect: CGRect, radius: CGFloat) -> CGPath {
         let path = makeInnerShadowShapePathFor(rect: rect, withCornerRadius: radius)
         var transform = CGAffineTransform(translationX: -1, y: -1)
@@ -223,27 +196,41 @@ public class ContainerView: UIView, MyCALayerDelegate {
         return path.copy(using: &transform)!
     }
 
-//MARK:Updating functions
+// MARK: CALayerDeledate
+    public override func action(for layer: CALayer, forKey event: String) -> CAAction? {
+        // if layer's corner radius changes, update the layout
+        if event == "cornerRadius" {
+            setNeedsLayout()
+        }
+        return super.action(for: layer, forKey: event)
+    }
+
+// MARK: Updating functions
     private func updateDarkSide() {
         if isConvex {
             outerDarkSide.shadowPath = UIBezierPath(roundedRect: layer.bounds, cornerRadius: layer.cornerRadius).cgPath
-            outerDarkSide.shadowOffset = CGSize(width:  elevation.elevationValue / 2, height: elevation.elevationValue / 4)
+            outerDarkSide.shadowOffset = CGSize(width: elevation.elevationValue / 2,
+                                                height: elevation.elevationValue / 4)
             outerDarkSide.shadowRadius = elevation.elevationValue
         } else {
             innerDarkSide.path = makeInnerUpperShadowShapePath(rect: bounds, radius: layer.cornerRadius)
-            innerDarkSide.shadowOffset = CGSize(width: -elevation.elevationValue / 2, height: -elevation.elevationValue / 4)
+            innerDarkSide.shadowOffset = CGSize(width: -elevation.elevationValue / 2,
+                                                height: -elevation.elevationValue / 4)
             innerDarkSide.shadowRadius = -elevation.elevationValue
         }
     }
 
     private func updateBrightSide() {
         if isConvex {
-            outerBrightSide.shadowPath = UIBezierPath(roundedRect: layer.bounds, cornerRadius: layer.cornerRadius).cgPath
-            outerBrightSide.shadowOffset = CGSize(width: -elevation.elevationValue / 2, height: -elevation.elevationValue / 4)
+            outerBrightSide.shadowPath = UIBezierPath(roundedRect: layer.bounds,
+                                                      cornerRadius: layer.cornerRadius).cgPath
+            outerBrightSide.shadowOffset = CGSize(width: -elevation.elevationValue / 2,
+                                                  height: -elevation.elevationValue / 4)
             outerBrightSide.shadowRadius = CGFloat(elevation.elevationValue)
         } else {
             innerBrightSide.path = makeInnerLowerShadowShapePath(rect: bounds, radius: layer.cornerRadius)
-            innerBrightSide.shadowOffset = CGSize(width:  elevation.elevationValue / 2, height:  elevation.elevationValue / 4)
+            innerBrightSide.shadowOffset = CGSize(width: elevation.elevationValue / 2,
+                                                  height: elevation.elevationValue / 4)
             innerBrightSide.shadowRadius = -elevation.elevationValue
         }
     }
@@ -252,7 +239,7 @@ public class ContainerView: UIView, MyCALayerDelegate {
         surface.frame = bounds
         surface.cornerRadius = layer.cornerRadius
     }
-    
+
     private func updateView() {
         updateDarkSide()
         updateBrightSide()
@@ -263,7 +250,7 @@ public class ContainerView: UIView, MyCALayerDelegate {
             outerBrightSide.isHidden = false
             innerBrightSide.isHidden = true
             innerDarkSide.isHidden = true
-            // to make sure that once the maked is removed
+            // to make sure that once the mask is removed
             // users won't see the layers disappearing with animation
             innerDarkSide.removeAllAnimations()
             innerBrightSide.removeAllAnimations()
@@ -278,27 +265,9 @@ public class ContainerView: UIView, MyCALayerDelegate {
             innerDarkSide.isHidden = false
         }
     }
-    
+
     override public func layoutSubviews() {
         super.layoutSubviews()
-
         updateView()
     }
 }
-
-protocol MyCALayerDelegate: class {
-    func cornerRadiusChanged()
-}
-
-class MyCALayer: CALayer {
-
-    weak var myDelegate: MyCALayerDelegate?
-
-    override var cornerRadius: CGFloat {
-        didSet {
-            myDelegate?.cornerRadiusChanged()
-        }
-    }
-}
-
-
