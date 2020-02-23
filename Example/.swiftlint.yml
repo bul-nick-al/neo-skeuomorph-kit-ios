@@ -3,7 +3,6 @@ warning_threshold: 1
 disabled_rules: # rule identifiers to exclude from running
   - switch_case_alignment # нужно посмотреть что это
   - empty_enum_arguments # нужно посмотреть что это
-  - fallthrough # нужно посмотреть что это
   - class_delegate_protocol # нужно посмотреть что это
   - for_where # нужно посмотреть нужно ли это нам
   - control_statement # нужно посмотреть нужно ли это нам
@@ -18,7 +17,7 @@ disabled_rules: # rule identifiers to exclude from running
 
 opt_in_rules:
   - anyobject_protocol
-
+ 
 included:
   - ../Example/
   - ../NeoSkeuomorphKit/

@@ -1,12 +1,8 @@
 use_frameworks!
 
+platform :ios, '11.0'
+
 target 'NeoSkeuomorphKit_Example' do
   pod 'NeoSkeuomorphKit', :path => '../'
   pod 'SwiftLint'
-
-  target 'NeoSkeuomorphKit_Tests' do
-    inherit! :search_paths
-
-    
-  end
 end
