@@ -105,11 +105,11 @@
 			buildConfigurationList = 607FACEF1AFB9204008FA782 /* Build configuration list for PBXNativeTarget "NeoSkeuomorphKit_Example" */;
 			buildPhases = (
 				BFF96859513ADF39C021E4A8 /* [CP] Check Pods Manifest.lock */,
+				0377F86C23A8DD3F00940AD4 /* SwiftLint */,
 				607FACCC1AFB9204008FA782 /* Sources */,
 				607FACCD1AFB9204008FA782 /* Frameworks */,
 				607FACCE1AFB9204008FA782 /* Resources */,
 				A1BDEB416ED2245977AFF6FB /* [CP] Embed Pods Frameworks */,
-				0377F86C23A8DD3F00940AD4 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -170,7 +170,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		0377F86C23A8DD3F00940AD4 /* ShellScript */ = {
+		0377F86C23A8DD3F00940AD4 /* SwiftLint */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -179,13 +179,14 @@
 			);
 			inputPaths = (
 			);
+			name = SwiftLint;
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if which ${PODS_ROOT}/SwiftLint/swiftlint >/dev/null; then\n${PODS_ROOT}/SwiftLint/swiftlint --config \"${SRCROOT}/.swiftlint.yml\"\nelse\necho \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellScript = "if which ${PODS_ROOT}/SwiftLint/swiftlint >/dev/null; then\n${PODS_ROOT}/SwiftLint/swiftlint --config \"${SRCROOT}/.swiftlint.yml\"\nelse\necho \"error: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nreturn 1\nfi\n";
 		};
 		A1BDEB416ED2245977AFF6FB /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
