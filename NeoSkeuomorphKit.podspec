@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
   s.name             = 'NeoSkeuomorphKit'
   s.version          = '0.1.0'
-  s.summary          = 'A short description of NeoSkeuomorphKit.'
+  s.summary          = 'A UI component library inspired by https://dribbble.com/alexplyuto'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -18,26 +18,19 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+A library that implements main UI components required for creating apps designed with alexpluto's (https://dribbble.com/alexplyuto)
+Neoskeuomorphism. This is a learning project, where the goal is to acquire iOS development skills necessary to implement
+something non-trivial, like the aforementioned designs.
                        DESC
 
-  s.homepage         = 'https://github.com/Nikolay/NeoSkeuomorphKit'
-  # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
-  s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'Nikolay' => 'bul-nick-al@ya.ru' }
-  s.source           = { :git => 'https://github.com/Nikolay/NeoSkeuomorphKit.git', :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
+  s.homepage = 'https://github.com/Nikolay/NeoSkeuomorphKit'
+  s.license = { :type => 'MIT', :file => 'LICENSE' }
+  s.author = { 'Nikolay Buldakov' => 'bul-nick-al@ya.ru', 'Bulat Khabirov' => 'khabiroff_b@me.com' }
+  s.source = { :git => 'https://github.com/Nikolay/NeoSkeuomorphKit.git', :tag => s.version.to_s }
 
   s.platform = :ios, '11.0'
   s.swift_version = '5.1'
 
-  s.source_files = 'NeoSkeuomorphKit/Classes/**/*'
-  
-  # s.resource_bundles = {
-  #   'NeoSkeuomorphKit' => ['NeoSkeuomorphKit/Assets/*.png']
-  # }
-
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+  s.source_files = 'NeoSkeuomorphKit/Classes/**/*.{swift,h,m}'
+  s.frameworks = 'UIKit'
 end
