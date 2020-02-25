@@ -10,7 +10,7 @@ import UIKit
 import NeoSkeuomorphKit
 
 class MasterViewController: UITableViewController {
-    
+
     var savedSelectionIndexPath: IndexPath?
     private var detailTargetChange: NSObjectProtocol!
 
@@ -36,12 +36,11 @@ class MasterViewController: UITableViewController {
             queue: OperationQueue.main) { [weak self] (_) in
                 // Whenever the target for showDetailViewController changes, update all of our cells
                 // to ensure they have the right accessory type.
-                //
                 guard let self = self else { return }
 
                 for cell in self.tableView.visibleCells {
                     let indexPath = self.tableView.indexPath(for: cell)
-                    self.tableView.delegate?.tableView!(self.tableView, willDisplay: cell, forRowAt: indexPath!)
+                    self.tableView(self.tableView, willDisplay: cell, forRowAt: indexPath!)
                 }
         }
     }
@@ -98,7 +97,7 @@ extension MasterViewController {
                             forRowAt indexPath: IndexPath) {
         if splitViewWantsToShowDetail() {
             cell.accessoryType = .none
-            if self.savedSelectionIndexPath != nil {
+            if let savedSelectionIndexPath = savedSelectionIndexPath {
                 self.tableView.selectRow(at: savedSelectionIndexPath, animated: true, scrollPosition: .none)
             }
         } else {
@@ -126,5 +125,4 @@ extension MasterViewController: UINavigationControllerDelegate {
             savedSelectionIndexPath = nil
         }
     }
-    
 }
