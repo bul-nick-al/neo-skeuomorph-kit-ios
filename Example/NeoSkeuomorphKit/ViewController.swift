@@ -57,8 +57,8 @@ class ViewController: UIViewController {
         backgroud.frame = view.bounds
         view.layer.insertSublayer(backgroud, at: 0)
         let slider = UISlider()
-        slider.maximumValue = 50
-        slider.minimumValue = -50
+        slider.maximumValue = 175
+        slider.minimumValue = 0
         slider.translatesAutoresizingMaskIntoConstraints = false
         slider.addTarget(self, action: #selector(self.changeShadow(_:)), for: .valueChanged)
         let segments = UISegmentedControl(items: ["-4", "-3", "-2", "-1", "0", "1", "2", "3", "4"])
