@@ -14,8 +14,9 @@ import UIKit
  view.addSubview(myCont)
  ```
  */
-public class ContainerView: UIView {
 
+// swiftlint:disable:next type_body_length
+public class ContainerView: UIView {
     public enum Elevation {
         case convexHigh
         case convexMedium
@@ -56,7 +57,7 @@ public class ContainerView: UIView {
 
 // MARK: Colors
     public let darkSideColor = UIColor(red: 0.53, green: 0.65, blue: 0.75, alpha: 0.48)
-    let brightSideColor = UIColor.white
+    public let brightSideColor = UIColor.white
 
 // MARK: Layers
     lazy private var outerBrightSide = getOuterSide(color: brightSideColor)
@@ -70,16 +71,35 @@ public class ContainerView: UIView {
         return surface
     }()
 
+    lazy private var strokeLine: CALayer = {
+        let mask = CAShapeLayer()
+        mask.masksToBounds = false
+        mask.lineWidth = 2
+        mask.lineJoin = .round
+        mask.strokeColor = UIColor.red.cgColor
+        mask.fillColor = UIColor.clear.cgColor
+        let layer = CAGradientLayer()
+        layer.masksToBounds = false
+        layer.colors = [brightSideColor.cgColor, darkSideColor.withAlphaComponent(1.0).cgColor]
+        layer.locations = [0.4, 1]
+        layer.startPoint = CGPoint(x: 0, y: 0)
+        layer.endPoint = CGPoint(x: 1, y: 1)
+        layer.mask = mask
+        return layer
+    }()
+
     weak public var child: UIView? {
         didSet {
             oldValue?.removeFromSuperview()
             if let child = child {
                 layer.addSublayer(outerBrightSide)
+                layer.masksToBounds = false
                 layer.addSublayer(outerDarkSide)
                 layer.addSublayer(surface)
                 addSubview(child)
                 layer.addSublayer(innerDarkSide)
                 layer.addSublayer(innerBrightSide)
+                layer.addSublayer(strokeLine)
                 // make the child be the same size as its parent
                 child.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
@@ -197,6 +217,7 @@ public class ContainerView: UIView {
                     endAngle: 2 * .pi, clockwise: false)
         path.addArc(center: CGPoint(x: width - radius, y: height - radius), radius: radius, startAngle: 2 * .pi,
                     endAngle: 2.5 * .pi, clockwise: false)
+        path.addLine(to: CGPoint(x: radius, y: height))
         return path
     }
 
@@ -222,13 +243,22 @@ public class ContainerView: UIView {
     }
 
 // MARK: Updating functions
+    private func updateStrokeLine() {
+        let path = makeCorneredRect(rect: bounds,
+                                    withCornerRadius: layer.cornerRadius)
+        strokeLine.frame = bounds
+        (strokeLine.mask as? CAShapeLayer)?.path = path
+    }
+
     private func updateDarkSide() {
         if isConvex {
+            outerDarkSide.frame = bounds
             outerDarkSide.shadowPath = makeCorneredRect(rect: bounds, withCornerRadius: layer.cornerRadius)
             outerDarkSide.shadowOffset = CGSize(width: elevation.elevationValue / 2,
                                                 height: elevation.elevationValue / 4)
             outerDarkSide.shadowRadius = elevation.elevationValue
         } else {
+            innerDarkSide.frame = bounds
             innerDarkSide.path = makeInnerUpperShadowShapePath(rect: bounds, radius: layer.cornerRadius)
             innerDarkSide.shadowOffset = CGSize(width: -elevation.elevationValue / 2,
                                                 height: -elevation.elevationValue / 4)
@@ -238,11 +268,13 @@ public class ContainerView: UIView {
 
     private func updateBrightSide() {
         if isConvex {
+            outerBrightSide.frame = bounds
             outerBrightSide.shadowPath = makeCorneredRect(rect: bounds, withCornerRadius: layer.cornerRadius)
             outerBrightSide.shadowOffset = CGSize(width: -elevation.elevationValue / 2,
                                                   height: -elevation.elevationValue / 4)
             outerBrightSide.shadowRadius = CGFloat(elevation.elevationValue)
         } else {
+            innerBrightSide.frame = bounds
             innerBrightSide.path = makeInnerLowerShadowShapePath(rect: bounds, radius: layer.cornerRadius)
             innerBrightSide.shadowOffset = CGSize(width: elevation.elevationValue / 2,
                                                   height: elevation.elevationValue / 4)
@@ -259,6 +291,7 @@ public class ContainerView: UIView {
         updateDarkSide()
         updateBrightSide()
         updateSurface()
+        updateStrokeLine()
         child?.layer.cornerRadius = layer.cornerRadius
         if isConvex {
             outerDarkSide.isHidden = false
