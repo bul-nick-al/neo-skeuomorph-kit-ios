@@ -9,6 +9,7 @@
 import UIKit
 
 class DetailViewManager: NSObject, UISplitViewControllerDelegate {
+
     var splitViewController: UISplitViewController? = nil {
         didSet {
             splitViewController?.delegate = self
@@ -41,7 +42,7 @@ class DetailViewManager: NSObject, UISplitViewControllerDelegate {
         return .allVisible
     }
 
-     func splitViewController(_ splitViewController: UISplitViewController,
+    func splitViewController(_ splitViewController: UISplitViewController,
                               collapseSecondary secondaryViewController: UIViewController,
                               onto primaryViewController: UIViewController) -> Bool {
         return true

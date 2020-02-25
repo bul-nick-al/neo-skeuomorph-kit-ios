@@ -14,8 +14,6 @@ extension UIViewController {
             master table, upon rotation to expand, we want to pop this view controller (to avoid
             master and detail being the same view controller).
         */
-        if navigationController != nil {
-            navigationController?.popViewController(animated: true)
-        }
+        navigationController?.popViewController(animated: true)
     }
 }

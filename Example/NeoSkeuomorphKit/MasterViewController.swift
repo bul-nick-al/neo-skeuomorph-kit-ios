@@ -10,6 +10,7 @@ import UIKit
 import NeoSkeuomorphKit
 
 class MasterViewController: UITableViewController {
+    
     var savedSelectionIndexPath: IndexPath?
     private var detailTargetChange: NSObjectProtocol!
 
@@ -50,7 +51,7 @@ class MasterViewController: UITableViewController {
         super.viewWillAppear(animated)
     }
 
-    // MARK: Utility functions
+// MARK: Utility functions
 
     func splitViewWantsToShowDetail() -> Bool {
         return splitViewController?.traitCollection.horizontalSizeClass == .regular
@@ -70,6 +71,7 @@ class MasterViewController: UITableViewController {
 // MARK: - Table view data source
 
 extension MasterViewController {
+
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return 1
@@ -91,6 +93,7 @@ extension MasterViewController {
 
 // MARK: - UITableViewDelegate
 extension MasterViewController {
+
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell,
                             forRowAt indexPath: IndexPath) {
         if splitViewWantsToShowDetail() {
@@ -103,6 +106,7 @@ extension MasterViewController {
             tableView.deselectRow(at: indexPath, animated: false)
         }
     }
+
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         savedSelectionIndexPath = indexPath
         let example = exampleList[indexPath.row]
@@ -113,6 +117,7 @@ extension MasterViewController {
 // MARK: - UINavigationControllerDelegate
 
 extension MasterViewController: UINavigationControllerDelegate {
+
     func navigationController(_ navigationController: UINavigationController,
                               didShow viewController: UIViewController, animated: Bool) {
         if viewController == self {
@@ -121,4 +126,5 @@ extension MasterViewController: UINavigationControllerDelegate {
             savedSelectionIndexPath = nil
         }
     }
+    
 }
