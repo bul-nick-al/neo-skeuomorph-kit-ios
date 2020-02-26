@@ -10,16 +10,15 @@ import UIKit
 
 class DetailViewManager: NSObject, UISplitViewControllerDelegate {
 
-    var splitViewController: UISplitViewController? = nil {
+    @IBOutlet weak var splitViewController: UISplitViewController! {
         didSet {
-            splitViewController?.delegate = self
             splitViewController?.preferredDisplayMode = .allVisible
         }
     }
 
     /// Swaps out the detail for view controller for the Split View Controller this instance is managing.
-     func setDetailViewController(detailViewController: UIViewController) {
-        var viewControllers: [UIViewController] = (splitViewController?.viewControllers)!
+     func set(detailViewController: UIViewController) {
+        var viewControllers = splitViewController.viewControllers
         if viewControllers.count > 1 {
             viewControllers[1] = detailViewController
         }
@@ -32,15 +31,10 @@ class DetailViewManager: NSObject, UISplitViewControllerDelegate {
     func setDefaultDetailViewController() {
         let initialDetailViewController = splitViewController?.storyboard?
             .instantiateViewController(withIdentifier: "navInitialDetail")
-        setDetailViewController(detailViewController: initialDetailViewController!)
+        set(detailViewController: initialDetailViewController!)
     }
 
     // MARK: - UISplitViewControllerDelegate
-
-    func targetDisplayModeForAction(
-        in splitViewController: UISplitViewController) -> UISplitViewController.DisplayMode {
-        return .allVisible
-    }
 
     func splitViewController(_ splitViewController: UISplitViewController,
                              collapseSecondary secondaryViewController: UIViewController,
@@ -50,32 +44,27 @@ class DetailViewManager: NSObject, UISplitViewControllerDelegate {
 
     func splitViewController(_ splitViewController: UISplitViewController,
                              separateSecondaryFrom primaryViewController: UIViewController) -> UIViewController? {
-        var returnSecondaryVC: UIViewController?
+        var returnSecondaryViewController: UIViewController?
 
-        if let primaryVC = primaryViewController as? UINavigationController {
-            let selectedVC = primaryVC.topViewController
-            if selectedVC is UINavigationController {
-                if let navVC = selectedVC as? UINavigationController {
-                    let currentVC = navVC.visibleViewController
-
-                    if currentVC?.popDueToSizeChange != nil {
-                        currentVC?.popDueToSizeChange()
-                    }
-
-                    // The currentVC has popped, now obtain it's ancestor vc in the table.
-                    let currentVC2 = navVC.visibleViewController
-                    if currentVC2 is MasterViewController {
-                        let baseTableViewVC = currentVC2 as? MasterViewController
-                        if baseTableViewVC?.tableView.indexPathForSelectedRow == nil {
-                            // The table has no selection, make the detail empty.
-                            returnSecondaryVC = splitViewController.storyboard?
-                                .instantiateViewController(withIdentifier: "navInitialDetail")
-                        }
-                    }
-                }
-            }
+        guard let primaryViewController = primaryViewController as? UINavigationController,
+            let navigationViewController = primaryViewController.topViewController as? UINavigationController else {
+            return nil
         }
 
-        return returnSecondaryVC
+        let currentViewController = navigationViewController.visibleViewController
+        if currentViewController?.popDueToSizeChange != nil {
+            currentViewController?.popDueToSizeChange()
+        }
+        // The currentVC has popped, now obtain it's ancestor vc in the table.
+        let currentViewController2 = navigationViewController.visibleViewController
+        if currentViewController2 is ComponentsTableViewController {
+            let baseTableViewVC = currentViewController2 as? ComponentsTableViewController
+            if baseTableViewVC?.tableView.indexPathForSelectedRow == nil {
+                // The table has no selection, make the detail empty.
+                returnSecondaryViewController = splitViewController.storyboard?
+                    .instantiateViewController(withIdentifier: "navInitialDetail")
+            }
+        }
+        return returnSecondaryViewController
     }
 }

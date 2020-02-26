@@ -9,7 +9,7 @@
 import UIKit
 import NeoSkeuomorphKit
 
-class MasterViewController: UITableViewController {
+class ComponentsTableViewController: UITableViewController {
 
     var savedSelectionIndexPath: IndexPath?
     private var detailTargetChange: NSObjectProtocol!
@@ -17,12 +17,12 @@ class MasterViewController: UITableViewController {
     struct Example {
         var title: String
         var subTitle: String
-        var viewcontroller: UIViewController.Type
+        var viewControllerType: UIViewController.Type
     }
 
     var exampleList = [
         // This is a list of examples offered by this sample.
-        Example(title: "Example", subTitle: "ExampleViewController", viewcontroller: ExampleViewController.self)
+        Example(title: "Example", subTitle: "ExampleViewController", viewControllerType: ExampleViewController.self)
     ]
 
     override func viewDidLoad() {
@@ -39,8 +39,8 @@ class MasterViewController: UITableViewController {
                 guard let self = self else { return }
 
                 for cell in self.tableView.visibleCells {
-                    let indexPath = self.tableView.indexPath(for: cell)
-                    self.tableView(self.tableView, willDisplay: cell, forRowAt: indexPath!)
+                    guard let indexPath = self.tableView.indexPath(for: cell) else { continue }
+                    self.tableView(self.tableView, willDisplay: cell, forRowAt: indexPath)
                 }
         }
     }
@@ -57,19 +57,13 @@ class MasterViewController: UITableViewController {
     }
 
     func pushOrPresentViewController(viewController: UIViewController, cellIndexPath: IndexPath) {
-        if splitViewWantsToShowDetail() {
-            let navVC = UINavigationController(rootViewController: viewController)
-            splitViewController?.showDetailViewController(navVC, sender: navVC)
-            // Replace the detail view controller.
-        } else {
-            navigationController?.pushViewController(viewController, animated: true) // Just push instead of replace.
-        }
+        splitViewController?.showDetailViewController(viewController, sender: viewController)
     }
 }
 
 // MARK: - Table view data source
 
-extension MasterViewController {
+extension ComponentsTableViewController {
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
@@ -82,16 +76,22 @@ extension MasterViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        let componentCell: UITableViewCell
+        let reusableIdentifier = "component-cell"
+        if let cell = tableView.dequeueReusableCell(withIdentifier: reusableIdentifier) {
+            componentCell = cell
+        } else {
+            componentCell = UITableViewCell(style: .subtitle, reuseIdentifier: reusableIdentifier)
+        }
         let example = exampleList[indexPath.row]
-        cell.textLabel?.text = example.title
-        cell.detailTextLabel?.text = example.subTitle
-        return cell
+        componentCell.textLabel?.text = example.title
+        componentCell.detailTextLabel?.text = example.subTitle
+        return componentCell
     }
 }
 
 // MARK: - UITableViewDelegate
-extension MasterViewController {
+extension ComponentsTableViewController {
 
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell,
                             forRowAt indexPath: IndexPath) {
@@ -109,13 +109,13 @@ extension MasterViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         savedSelectionIndexPath = indexPath
         let example = exampleList[indexPath.row]
-        pushOrPresentViewController(viewController: example.viewcontroller.init(), cellIndexPath: indexPath)
+        pushOrPresentViewController(viewController: example.viewControllerType.init(), cellIndexPath: indexPath)
     }
 }
 
 // MARK: - UINavigationControllerDelegate
 
-extension MasterViewController: UINavigationControllerDelegate {
+extension ComponentsTableViewController: UINavigationControllerDelegate {
 
     func navigationController(_ navigationController: UINavigationController,
                               didShow viewController: UIViewController, animated: Bool) {
