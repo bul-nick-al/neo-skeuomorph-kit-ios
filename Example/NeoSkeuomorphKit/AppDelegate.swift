@@ -20,19 +20,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        if let splitViewController = window!.rootViewController as? UISplitViewController {
-            splitViewController.preferredDisplayMode = .allVisible
-            splitViewController.delegate = detailViewManager
-            detailViewManager.splitViewController = splitViewController
-
-            // Set the master view controller table view with translucent background.
-            if #available(iOS 13.0, *) {
-                splitViewController.primaryBackgroundStyle = .sidebar
-            } else {
-                // Fallback on earlier versions
-            }
-        }
-
         return true
     }
 

@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0360A6F62401BA8E00DC49FE /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0360A6F52401BA8E00DC49FE /* MasterViewController.swift */; };
+		0360A6F62401BA8E00DC49FE /* ComponentsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0360A6F52401BA8E00DC49FE /* ComponentsTableViewController.swift */; };
 		0360A6F82401D6E100DC49FE /* DetailViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0360A6F72401D6E100DC49FE /* DetailViewManager.swift */; };
 		0360A6FA2401D76D00DC49FE /* UIViewController+SizeChange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0360A6F92401D76D00DC49FE /* UIViewController+SizeChange.swift */; };
 		03DAA05B2401DEA400C77CCE /* ExampleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DAA05A2401DEA400C77CCE /* ExampleViewController.swift */; };
@@ -19,11 +19,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0360A6F52401BA8E00DC49FE /* MasterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterViewController.swift; sourceTree = "<group>"; };
+		0360A6F52401BA8E00DC49FE /* ComponentsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentsTableViewController.swift; sourceTree = "<group>"; };
 		0360A6F72401D6E100DC49FE /* DetailViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewManager.swift; sourceTree = "<group>"; };
 		0360A6F92401D76D00DC49FE /* UIViewController+SizeChange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+SizeChange.swift"; sourceTree = "<group>"; };
 		03DAA05A2401DEA400C77CCE /* ExampleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleViewController.swift; sourceTree = "<group>"; };
-		39B97F9B5096BB61E34960FD /* NeoSkeuomorphKit.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = NeoSkeuomorphKit.podspec; path = ../NeoSkeuomorphKit.podspec; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* NeoSkeuomorphKit_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NeoSkeuomorphKit_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACD51AFB9204008FA782 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -99,7 +98,7 @@
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
-				0360A6F52401BA8E00DC49FE /* MasterViewController.swift */,
+				0360A6F52401BA8E00DC49FE /* ComponentsTableViewController.swift */,
 				0360A6F72401D6E100DC49FE /* DetailViewManager.swift */,
 				0360A6F92401D76D00DC49FE /* UIViewController+SizeChange.swift */,
 			);
@@ -253,7 +252,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0360A6F62401BA8E00DC49FE /* MasterViewController.swift in Sources */,
+				0360A6F62401BA8E00DC49FE /* ComponentsTableViewController.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				0360A6F82401D6E100DC49FE /* DetailViewManager.swift in Sources */,
 				0360A6FA2401D76D00DC49FE /* UIViewController+SizeChange.swift in Sources */,
