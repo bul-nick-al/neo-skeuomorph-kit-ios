@@ -16,7 +16,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     /** The detailViewManager is responsible for maintaining the UISplitViewController delegation
         and for managing the detail view controller of the split view.
     */
-    var detailViewManager = DetailViewManager()
 
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
