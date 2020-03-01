@@ -12,7 +12,6 @@ import NeoSkeuomorphKit
 class ComponentsTableViewController: UITableViewController {
 
     var savedSelectionIndexPath: IndexPath?
-    private var detailTargetChange: NSObjectProtocol!
 
     struct Example {
         var title: String
@@ -29,35 +28,29 @@ class ComponentsTableViewController: UITableViewController {
         super.viewDidLoad()
 
         navigationController?.delegate = self  // So we can listen when we come and go on the nav stack.
-
-        detailTargetChange = NotificationCenter.default.addObserver(
-            forName: UIViewController.showDetailTargetDidChangeNotification,
-            object: nil,
-            queue: OperationQueue.main) { [weak self] (_) in
-                // Whenever the target for showDetailViewController changes, update all of our cells
-                // to ensure they have the right accessory type.
-                guard let self = self else { return }
-
-                for cell in self.tableView.visibleCells {
-                    guard let indexPath = self.tableView.indexPath(for: cell) else { continue }
-                    self.tableView(self.tableView, willDisplay: cell, forRowAt: indexPath)
-                }
-        }
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateCells(_:)),
+                                               name: UIViewController.showDetailTargetDidChangeNotification,
+                                               object: nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        clearsSelectionOnViewWillAppear = splitViewController!.isCollapsed
         super.viewWillAppear(animated)
+        clearsSelectionOnViewWillAppear = splitViewController!.isCollapsed
+    }
+
+    @objc func updateCells(_: Notification) {
+        // Whenever the target for showDetailViewController changes, update all of our cells
+        // to ensure they have the right accessory type.
+        for cell in self.tableView.visibleCells {
+            guard let indexPath = self.tableView.indexPath(for: cell) else { continue }
+            self.tableView(self.tableView, willDisplay: cell, forRowAt: indexPath)
+        }
     }
 
 // MARK: Utility functions
-
-    func splitViewWantsToShowDetail() -> Bool {
+    private func splitViewWantsToShowDetail() -> Bool {
         return splitViewController?.traitCollection.horizontalSizeClass == .regular
-    }
-
-    func pushOrPresentViewController(viewController: UIViewController, cellIndexPath: IndexPath) {
-        splitViewController?.showDetailViewController(viewController, sender: viewController)
     }
 }
 
@@ -65,27 +58,25 @@ class ComponentsTableViewController: UITableViewController {
 
 extension ComponentsTableViewController {
 
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 1
-    }
-
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
         return exampleList.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let componentCell: UITableViewCell
         let reusableIdentifier = "component-cell"
+
         if let cell = tableView.dequeueReusableCell(withIdentifier: reusableIdentifier) {
             componentCell = cell
         } else {
             componentCell = UITableViewCell(style: .subtitle, reuseIdentifier: reusableIdentifier)
         }
+
         let example = exampleList[indexPath.row]
+
         componentCell.textLabel?.text = example.title
         componentCell.detailTextLabel?.text = example.subTitle
+
         return componentCell
     }
 }
@@ -107,9 +98,13 @@ extension ComponentsTableViewController {
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+
         savedSelectionIndexPath = indexPath
+
         let example = exampleList[indexPath.row]
-        pushOrPresentViewController(viewController: example.viewControllerType.init(), cellIndexPath: indexPath)
+        let viewController = example.viewControllerType.init()
+
+        splitViewController?.showDetailViewController(viewController, sender: viewController)
     }
 }
 
@@ -119,6 +114,7 @@ extension ComponentsTableViewController: UINavigationControllerDelegate {
 
     func navigationController(_ navigationController: UINavigationController,
                               didShow viewController: UIViewController, animated: Bool) {
+
         if viewController == self {
             // We re-appeared on the nav stack (likely because we manually popped)
             //so our saved selection should be cleared.

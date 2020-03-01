@@ -19,19 +19,12 @@ class DetailViewManager: NSObject, UISplitViewControllerDelegate {
     /// Swaps out the detail for view controller for the Split View Controller this instance is managing.
      func set(detailViewController: UIViewController) {
         var viewControllers = splitViewController.viewControllers
+
         if viewControllers.count > 1 {
             viewControllers[1] = detailViewController
         }
-        splitViewController?.viewControllers = viewControllers
-    }
 
-    /** Set the default plain detail view controller (called by PageOneViewController,
-        that is, in case a selected item is deleted in a split view controller)
-    */
-    func setDefaultDetailViewController() {
-        let initialDetailViewController = splitViewController?.storyboard?
-            .instantiateViewController(withIdentifier: "navInitialDetail")
-        set(detailViewController: initialDetailViewController!)
+        splitViewController?.viewControllers = viewControllers
     }
 
     // MARK: - UISplitViewControllerDelegate
@@ -52,19 +45,24 @@ class DetailViewManager: NSObject, UISplitViewControllerDelegate {
         }
 
         let currentViewController = navigationViewController.visibleViewController
+
         if currentViewController?.popDueToSizeChange != nil {
             currentViewController?.popDueToSizeChange()
         }
+
         // The currentVC has popped, now obtain it's ancestor vc in the table.
         let currentViewController2 = navigationViewController.visibleViewController
+
         if currentViewController2 is ComponentsTableViewController {
-            let baseTableViewVC = currentViewController2 as? ComponentsTableViewController
-            if baseTableViewVC?.tableView.indexPathForSelectedRow == nil {
+            let baseTableViewViewController = currentViewController2 as? ComponentsTableViewController
+
+            if baseTableViewViewController?.tableView.indexPathForSelectedRow == nil {
                 // The table has no selection, make the detail empty.
                 returnSecondaryViewController = splitViewController.storyboard?
-                    .instantiateViewController(withIdentifier: "navInitialDetail")
+                    .instantiateViewController(withIdentifier: Constants.defaultControllerName)
             }
         }
+
         return returnSecondaryViewController
     }
 }

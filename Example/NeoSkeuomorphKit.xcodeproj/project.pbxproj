@@ -16,6 +16,7 @@
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		ABE5A22B5CC255DD41D85E4F /* Pods_NeoSkeuomorphKit_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A87DDD8416104ED0A95DE45 /* Pods_NeoSkeuomorphKit_Example.framework */; };
+		E18503B3240C015000B9A574 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18503B2240C015000B9A574 /* Constants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		8CC45A31E778D5CE25F59DB7 /* Pods-NeoSkeuomorphKit_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NeoSkeuomorphKit_Example.release.xcconfig"; path = "Target Support Files/Pods-NeoSkeuomorphKit_Example/Pods-NeoSkeuomorphKit_Example.release.xcconfig"; sourceTree = "<group>"; };
 		96F6CD79415164C8B5ABB184 /* Pods-NeoSkeuomorphKit_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NeoSkeuomorphKit_Example.debug.xcconfig"; path = "Target Support Files/Pods-NeoSkeuomorphKit_Example/Pods-NeoSkeuomorphKit_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		9A87DDD8416104ED0A95DE45 /* Pods_NeoSkeuomorphKit_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NeoSkeuomorphKit_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E18503B2240C015000B9A574 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +103,7 @@
 				0360A6F52401BA8E00DC49FE /* ComponentsTableViewController.swift */,
 				0360A6F72401D6E100DC49FE /* DetailViewManager.swift */,
 				0360A6F92401D76D00DC49FE /* UIViewController+SizeChange.swift */,
+				E18503B2240C015000B9A574 /* Constants.swift */,
 			);
 			name = Example;
 			path = NeoSkeuomorphKit;
@@ -257,6 +260,7 @@
 				0360A6F82401D6E100DC49FE /* DetailViewManager.swift in Sources */,
 				0360A6FA2401D76D00DC49FE /* UIViewController+SizeChange.swift in Sources */,
 				03DAA05B2401DEA400C77CCE /* ExampleViewController.swift in Sources */,
+				E18503B3240C015000B9A574 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
