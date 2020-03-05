@@ -83,6 +83,7 @@ class ViewController: UIViewController {
 
         let childView = UIView(frame: CGRect(x: 0, y: 0, width: 150, height: 280))
         childView.backgroundColor = UIColor(red: 227.0/255.0, green: 237.0/255.0, blue: 247.0/255.0, alpha: 1.0)
+//        childView.backgroundColor = .black
         childView.layer.cornerRadius = 40
         view.addSubview(myCont)
         NSLayoutConstraint.activate([
