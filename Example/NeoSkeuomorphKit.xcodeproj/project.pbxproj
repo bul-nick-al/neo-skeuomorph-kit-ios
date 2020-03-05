@@ -7,25 +7,33 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0360A6F62401BA8E00DC49FE /* ComponentsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0360A6F52401BA8E00DC49FE /* ComponentsTableViewController.swift */; };
+		0360A6F82401D6E100DC49FE /* DetailViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0360A6F72401D6E100DC49FE /* DetailViewManager.swift */; };
+		0360A6FA2401D76D00DC49FE /* UIViewController+SizeChange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0360A6F92401D76D00DC49FE /* UIViewController+SizeChange.swift */; };
+		03DAA05B2401DEA400C77CCE /* ExampleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DAA05A2401DEA400C77CCE /* ExampleViewController.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
-		607FACD81AFB9204008FA782 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* ViewController.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		ABE5A22B5CC255DD41D85E4F /* Pods_NeoSkeuomorphKit_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A87DDD8416104ED0A95DE45 /* Pods_NeoSkeuomorphKit_Example.framework */; };
+		E18503B3240C015000B9A574 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18503B2240C015000B9A574 /* Constants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0360A6F52401BA8E00DC49FE /* ComponentsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentsTableViewController.swift; sourceTree = "<group>"; };
+		0360A6F72401D6E100DC49FE /* DetailViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewManager.swift; sourceTree = "<group>"; };
+		0360A6F92401D76D00DC49FE /* UIViewController+SizeChange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+SizeChange.swift"; sourceTree = "<group>"; };
+		03DAA05A2401DEA400C77CCE /* ExampleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleViewController.swift; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* NeoSkeuomorphKit_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NeoSkeuomorphKit_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACD51AFB9204008FA782 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		607FACD71AFB9204008FA782 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		607FACDA1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		607FACDC1AFB9204008FA782 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		607FACDF1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		8CC45A31E778D5CE25F59DB7 /* Pods-NeoSkeuomorphKit_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NeoSkeuomorphKit_Example.release.xcconfig"; path = "Target Support Files/Pods-NeoSkeuomorphKit_Example/Pods-NeoSkeuomorphKit_Example.release.xcconfig"; sourceTree = "<group>"; };
 		96F6CD79415164C8B5ABB184 /* Pods-NeoSkeuomorphKit_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NeoSkeuomorphKit_Example.debug.xcconfig"; path = "Target Support Files/Pods-NeoSkeuomorphKit_Example/Pods-NeoSkeuomorphKit_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		9A87DDD8416104ED0A95DE45 /* Pods_NeoSkeuomorphKit_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NeoSkeuomorphKit_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E18503B2240C015000B9A574 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,6 +48,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		03DAA0572401DDEF00C77CCE /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				03DAA05A2401DEA400C77CCE /* ExampleViewController.swift */,
+			);
+			path = "View Controllers";
+			sourceTree = "<group>";
+		};
 		41184A74DE9D0922FAF02E5B /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -78,12 +94,16 @@
 		607FACD21AFB9204008FA782 /* Example */ = {
 			isa = PBXGroup;
 			children = (
+				03DAA0572401DDEF00C77CCE /* View Controllers */,
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
-				607FACD71AFB9204008FA782 /* ViewController.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
+				0360A6F52401BA8E00DC49FE /* ComponentsTableViewController.swift */,
+				0360A6F72401D6E100DC49FE /* DetailViewManager.swift */,
+				0360A6F92401D76D00DC49FE /* UIViewController+SizeChange.swift */,
+				E18503B2240C015000B9A574 /* Constants.swift */,
 			);
 			name = Example;
 			path = NeoSkeuomorphKit;
@@ -235,8 +255,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
+				0360A6F62401BA8E00DC49FE /* ComponentsTableViewController.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
+				0360A6F82401D6E100DC49FE /* DetailViewManager.swift in Sources */,
+				0360A6FA2401D76D00DC49FE /* UIViewController+SizeChange.swift in Sources */,
+				03DAA05B2401DEA400C77CCE /* ExampleViewController.swift in Sources */,
+				E18503B3240C015000B9A574 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -379,6 +403,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
