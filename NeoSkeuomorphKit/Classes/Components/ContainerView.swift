@@ -15,15 +15,22 @@ import UIKit
  ```
  */
 
+@IBDesignable
 // swiftlint:disable:next type_body_length
-public class ContainerView: UIView {
+public class ContainerView<ChildView>: UIView where ChildView: UIView {
+
+    /**
+     Represents the elevation of a container view.
+     Cases that start with "convex" will create a levetating effect above the surface
+     Cases starting concave will make a view look bending inwards the surface
+     */
     public enum Elevation {
         case convexHigh
         case convexMedium
         case convexLow
-        case convexSlightly
+        case convexSlight
         case flat
-        case concaveSlightly
+        case concaveSlight
         case concaveLow
         case concaveMedium
         case concaveHigh
@@ -37,11 +44,11 @@ public class ContainerView: UIView {
                 return 30
             case .convexLow:
                 return 15
-            case .convexSlightly:
+            case .convexSlight:
                 return 5
             case .flat:
                 return 0
-            case .concaveSlightly:
+            case .concaveSlight:
                 return -5
             case .concaveLow:
                 return -15
@@ -55,15 +62,21 @@ public class ContainerView: UIView {
         }
     }
 
+// MARK: Initializers
+    public convenience init(child: ChildView) {
+        defer { self.child = child }
+        self.init(frame: child.frame)
+    }
+
 // MARK: Colors
     public let darkSideColor = UIColor(red: 0.53, green: 0.65, blue: 0.75, alpha: 0.48)
     public let brightSideColor = UIColor.white
 
 // MARK: Layers
-    lazy private var outerBrightSide = getOuterSide(color: brightSideColor)
-    lazy private var outerDarkSide = getOuterSide(color: darkSideColor)
-    lazy private var innerBrightSide = getInnerSide(color: brightSideColor)
-    lazy private var innerDarkSide = getInnerSide(color: darkSideColor.withAlphaComponent(1.0))
+    lazy private var outerUpperLeftShadow = getOuterShadow(color: brightSideColor)
+    lazy private var outerLowerRightShadow = getOuterShadow(color: darkSideColor)
+    lazy private var innerUpperLeftShadow = getInnerShadow(color: darkSideColor.withAlphaComponent(1.0))
+    lazy private var innerLowerRightShadow = getInnerShadow(color: brightSideColor)
 
     lazy private var surface: CALayer = {
         let surface = CALayer()
@@ -73,11 +86,8 @@ public class ContainerView: UIView {
 
     lazy private var strokeLine: CALayer = {
         let mask = CAShapeLayer()
-        mask.masksToBounds = false
-        mask.lineWidth = 2
-        mask.lineJoin = .round
-        mask.strokeColor = UIColor.red.cgColor
-        mask.fillColor = UIColor.clear.cgColor
+        mask.fillRule = .evenOdd
+        mask.lineCap = .round
         let layer = CAGradientLayer()
         layer.masksToBounds = false
         layer.colors = [brightSideColor.cgColor, darkSideColor.withAlphaComponent(1.0).cgColor]
@@ -88,30 +98,44 @@ public class ContainerView: UIView {
         return layer
     }()
 
-    weak public var child: UIView? {
+    public var child: ChildView? {
         didSet {
             oldValue?.removeFromSuperview()
-            if let child = child {
-                layer.addSublayer(outerBrightSide)
-                layer.masksToBounds = false
-                layer.addSublayer(outerDarkSide)
-                layer.addSublayer(surface)
-                addSubview(child)
-                layer.addSublayer(innerDarkSide)
-                layer.addSublayer(innerBrightSide)
-                layer.addSublayer(strokeLine)
-                // make the child be the same size as its parent
-                child.translatesAutoresizingMaskIntoConstraints = false
-                NSLayoutConstraint.activate([
-                    child.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-                    child.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-                    child.topAnchor.constraint(equalTo: self.topAnchor),
-                    child.bottomAnchor.constraint(equalTo: self.bottomAnchor),
-                    child.widthAnchor.constraint(equalTo: widthAnchor)
-                ])
-            }
+
+            guard let child = child else { return }
+
+            layer.addSublayer(outerUpperLeftShadow)
+            layer.masksToBounds = false
+            layer.addSublayer(outerLowerRightShadow)
+            layer.addSublayer(surface)
+
+            addSubview(child)
+
+            layer.addSublayer(innerUpperLeftShadow)
+            layer.addSublayer(innerLowerRightShadow)
+            layer.addSublayer(strokeLine)
+
+            // make the child be the same size as its parent
+            child.translatesAutoresizingMaskIntoConstraints = false
+
+            // make the child stick to the edges of the container
+            setChildConstraints()
+
             setNeedsLayout()
         }
+    }
+
+// MARK: Constraints
+
+    func setChildConstraints() {
+        guard let child = child else { return }
+        NSLayoutConstraint.activate([
+            child.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            child.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            child.topAnchor.constraint(equalTo: self.topAnchor),
+            child.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            child.widthAnchor.constraint(equalTo: widthAnchor)
+        ])
     }
 
 // MARK: Properties
@@ -134,6 +158,14 @@ public class ContainerView: UIView {
         }
     }
 
+    // Width of the line that goes around a container view. Use only non negative values.
+    public var strokeWidth: Float = 0 {
+        didSet {
+            strokeWidth = abs(strokeWidth)
+            setNeedsLayout()
+        }
+    }
+
     public override var backgroundColor: UIColor? {
         didSet {
             surface.backgroundColor = backgroundColor?.cgColor
@@ -146,7 +178,7 @@ public class ContainerView: UIView {
      
      - parameter color: the color of the shadow this layer will have.
      */
-    private func getOuterSide(color: UIColor) -> CALayer {
+    private func getOuterShadow(color: UIColor) -> CALayer {
         let outerSide = CALayer()
         outerSide.shadowColor = color.cgColor
         outerSide.shadowOpacity = 1.0
@@ -159,7 +191,7 @@ public class ContainerView: UIView {
     
     - parameter color: the color of the shadow this layer will have.
     */
-    private func getInnerSide(color: UIColor) -> CAShapeLayer {
+    private func getInnerShadow(color: UIColor) -> CAShapeLayer {
         let innerSide = CAShapeLayer()
         innerSide.fillRule = .evenOdd
         innerSide.fillColor = color.cgColor
@@ -190,18 +222,48 @@ public class ContainerView: UIView {
         let path = CGMutablePath()
         let height = rect.height + 1
         let width = rect.width + 1
-        path.addArc(center: CGPoint(x: radius, y: height - radius), radius: radius, startAngle: 3/4 * .pi,
-                    endAngle: .pi, clockwise: false)
-        path.addArc(center: CGPoint(x: radius, y: radius), radius: radius, startAngle: .pi,
-                    endAngle: 3/2 * .pi, clockwise: false)
-        path.addArc(center: CGPoint(x: width - radius, y: radius), radius: radius, startAngle: 3/2 * .pi,
-                    endAngle: 7/4 * .pi, clockwise: false)
-        path.addArc(center: CGPoint(x: width - radius, y: radius), radius: radius + 10, startAngle: 7/4 * .pi,
-                    endAngle: 3/2 * .pi, clockwise: true)
-        path.addArc(center: CGPoint(x: radius, y: radius), radius: radius + 10, startAngle: 3/2 * .pi,
-                    endAngle: .pi, clockwise: true)
-        path.addArc(center: CGPoint(x: radius, y: height - radius), radius: radius + 10, startAngle: .pi,
-                    endAngle: 3/4 * .pi, clockwise: true)
+        path.addArc(
+            center: CGPoint(x: radius, y: height - radius),
+            radius: radius,
+            startAngle: 3/4 * .pi,
+            endAngle: .pi,
+            clockwise: false
+        )
+        path.addArc(
+            center: CGPoint(x: radius, y: radius),
+            radius: radius,
+            startAngle: .pi,
+            endAngle: 3/2 * .pi,
+            clockwise: false
+        )
+        path.addArc(
+            center: CGPoint(x: width - radius, y: radius),
+            radius: radius,
+            startAngle: 3/2 * .pi,
+            endAngle: 7/4 * .pi,
+            clockwise: false
+        )
+        path.addArc(
+            center: CGPoint(x: width - radius, y: radius),
+            radius: radius + 10,
+            startAngle: 7/4 * .pi,
+            endAngle: 3/2 * .pi,
+            clockwise: true
+        )
+        path.addArc(
+            center: CGPoint(x: radius, y: radius),
+            radius: radius + 10,
+            startAngle: 3/2 * .pi,
+            endAngle: .pi,
+            clockwise: true
+        )
+        path.addArc(
+            center: CGPoint(x: radius, y: height - radius),
+            radius: radius + 10,
+            startAngle: .pi,
+            endAngle: 3/4 * .pi,
+            clockwise: true
+        )
         return path
     }
 
@@ -209,15 +271,54 @@ public class ContainerView: UIView {
         let path = CGMutablePath()
         let height = rect.height
         let width = rect.width
-        path.addArc(center: CGPoint(x: radius, y: height - radius), radius: radius, startAngle: 1/2 * .pi,
-                    endAngle: .pi, clockwise: false)
-        path.addArc(center: CGPoint(x: radius, y: radius), radius: radius, startAngle: .pi,
-                    endAngle: 3/2 * .pi, clockwise: false)
-        path.addArc(center: CGPoint(x: width - radius, y: radius), radius: radius, startAngle: 3/2 * .pi,
-                    endAngle: 2 * .pi, clockwise: false)
-        path.addArc(center: CGPoint(x: width - radius, y: height - radius), radius: radius, startAngle: 2 * .pi,
-                    endAngle: 2.5 * .pi, clockwise: false)
+        path.addArc(
+            center: CGPoint(x: radius, y: height - radius),
+            radius: radius,
+            startAngle: 1/2 * .pi,
+            endAngle: .pi,
+            clockwise: false
+        )
+        path.addArc(
+            center: CGPoint(x: radius, y: radius),
+            radius: radius,
+            startAngle: .pi,
+            endAngle: 3/2 * .pi,
+            clockwise: false
+        )
+        path.addArc(
+            center: CGPoint(x: width - radius, y: radius),
+            radius: radius,
+            startAngle: 3/2 * .pi,
+            endAngle: 2 * .pi,
+            clockwise: false
+        )
+        path.addArc(
+            center: CGPoint(x: width - radius, y: height - radius),
+            radius: radius,
+            startAngle: 2 * .pi,
+            endAngle: 2.5 * .pi,
+            clockwise: false)
         path.addLine(to: CGPoint(x: radius, y: height))
+        return path
+    }
+
+    /**
+    Make a path of a think ractangular with rounded corners. Thickness grows inside
+
+    - Parameters:
+        - rect: rectangular bounds
+        - radius: corner radius
+        - lineWidth: how think the rect should be
+    */
+    private func makeThickCorneredRect(rect: CGRect, withCornerRadius radius: CGFloat, lineWidth: CGFloat) -> CGPath {
+        let path = CGMutablePath()
+        let innnerRadius = radius < lineWidth ? 0 : radius - lineWidth
+        path.addPath(makeCorneredRect(rect: rect, withCornerRadius: radius))
+        var transform  = CGAffineTransform(translationX: lineWidth, y: lineWidth)
+        path.addPath(makeCorneredRect(
+            rect: rect.insetBy(dx: lineWidth, dy: lineWidth),
+            withCornerRadius: innnerRadius).copy(using: &transform)!
+        )
         return path
     }
 
@@ -226,6 +327,7 @@ public class ContainerView: UIView {
         var transform = CGAffineTransform(translationX: -1, y: -1)
         return path.copy(using: &transform)!
     }
+
     private func makeInnerLowerShadowShapePath(rect: CGRect, radius: CGFloat) -> CGPath {
         let path = makeInnerShadowShapePathFor(rect: rect, withCornerRadius: radius)
         var transform = CGAffineTransform(translationX: rect.maxX + 1, y: rect.maxY + 1)
@@ -234,6 +336,7 @@ public class ContainerView: UIView {
     }
 
 // MARK: CALayerDeledate
+    //We use this to be notified whenever the corner radius of layer changes
     public override func action(for layer: CALayer, forKey event: String) -> CAAction? {
         // if layer's corner radius changes, update the layout
         if event == "cornerRadius" {
@@ -244,41 +347,60 @@ public class ContainerView: UIView {
 
 // MARK: Updating functions
     private func updateStrokeLine() {
-        let path = makeCorneredRect(rect: bounds,
-                                    withCornerRadius: layer.cornerRadius)
+        let path = makeThickCorneredRect(
+            rect: bounds,
+            withCornerRadius: layer.cornerRadius,
+            lineWidth: CGFloat(strokeWidth)
+        )
         strokeLine.frame = bounds
         (strokeLine.mask as? CAShapeLayer)?.path = path
     }
 
-    private func updateDarkSide() {
+    /**
+    This method sets the dark shadow of the container depending on whether
+    the container is convex or not and also depending on bounds and elevation
+    */
+    private func updateDarkShadow() {
         if isConvex {
-            outerDarkSide.frame = bounds
-            outerDarkSide.shadowPath = makeCorneredRect(rect: bounds, withCornerRadius: layer.cornerRadius)
-            outerDarkSide.shadowOffset = CGSize(width: elevation.elevationValue / 2,
-                                                height: elevation.elevationValue / 4)
-            outerDarkSide.shadowRadius = elevation.elevationValue
+            outerLowerRightShadow.frame = bounds
+            outerLowerRightShadow.shadowPath = makeCorneredRect(rect: bounds, withCornerRadius: layer.cornerRadius)
+            outerLowerRightShadow.shadowOffset = CGSize(
+                width: elevation.elevationValue / 2,
+                height: elevation.elevationValue / 4
+            )
+            outerLowerRightShadow.shadowRadius = elevation.elevationValue
         } else {
-            innerDarkSide.frame = bounds
-            innerDarkSide.path = makeInnerUpperShadowShapePath(rect: bounds, radius: layer.cornerRadius)
-            innerDarkSide.shadowOffset = CGSize(width: -elevation.elevationValue / 2,
-                                                height: -elevation.elevationValue / 4)
-            innerDarkSide.shadowRadius = -elevation.elevationValue
+            innerUpperLeftShadow.frame = bounds
+            innerUpperLeftShadow.path = makeInnerUpperShadowShapePath(rect: bounds, radius: layer.cornerRadius)
+            innerUpperLeftShadow.shadowOffset = CGSize(
+                width: -elevation.elevationValue / 2,
+                height: -elevation.elevationValue / 4
+            )
+            innerUpperLeftShadow.shadowRadius = -elevation.elevationValue
         }
     }
 
-    private func updateBrightSide() {
+    /**
+     This method sets the bright shadow of the container depending on whether
+     the container is convex or not and also depending on bounds and elevation
+     */
+    private func updateBrightShadow() {
         if isConvex {
-            outerBrightSide.frame = bounds
-            outerBrightSide.shadowPath = makeCorneredRect(rect: bounds, withCornerRadius: layer.cornerRadius)
-            outerBrightSide.shadowOffset = CGSize(width: -elevation.elevationValue / 2,
-                                                  height: -elevation.elevationValue / 4)
-            outerBrightSide.shadowRadius = CGFloat(elevation.elevationValue)
+            outerUpperLeftShadow.frame = bounds
+            outerUpperLeftShadow.shadowPath = makeCorneredRect(rect: bounds, withCornerRadius: layer.cornerRadius)
+            outerUpperLeftShadow.shadowOffset = CGSize(
+                width: -elevation.elevationValue / 2,
+                height: -elevation.elevationValue / 4
+            )
+            outerUpperLeftShadow.shadowRadius = CGFloat(elevation.elevationValue)
         } else {
-            innerBrightSide.frame = bounds
-            innerBrightSide.path = makeInnerLowerShadowShapePath(rect: bounds, radius: layer.cornerRadius)
-            innerBrightSide.shadowOffset = CGSize(width: elevation.elevationValue / 2,
-                                                  height: elevation.elevationValue / 4)
-            innerBrightSide.shadowRadius = -elevation.elevationValue
+            innerLowerRightShadow.frame = bounds
+            innerLowerRightShadow.path = makeInnerLowerShadowShapePath(rect: bounds, radius: layer.cornerRadius)
+            innerLowerRightShadow.shadowOffset = CGSize(
+                width: elevation.elevationValue / 2,
+                height: elevation.elevationValue / 4
+            )
+            innerLowerRightShadow.shadowRadius = -elevation.elevationValue
         }
     }
 
@@ -288,29 +410,29 @@ public class ContainerView: UIView {
     }
 
     private func updateView() {
-        updateDarkSide()
-        updateBrightSide()
+        updateDarkShadow()
+        updateBrightShadow()
         updateSurface()
         updateStrokeLine()
         child?.layer.cornerRadius = layer.cornerRadius
         if isConvex {
-            outerDarkSide.isHidden = false
-            outerBrightSide.isHidden = false
-            innerBrightSide.isHidden = true
-            innerDarkSide.isHidden = true
+            outerLowerRightShadow.isHidden = false
+            outerUpperLeftShadow.isHidden = false
+            innerLowerRightShadow.isHidden = true
+            innerUpperLeftShadow.isHidden = true
             // to make sure that once the mask is removed
             // users won't see the layers disappearing with animation
-            innerDarkSide.removeAllAnimations()
-            innerBrightSide.removeAllAnimations()
+            innerUpperLeftShadow.removeAllAnimations()
+            innerLowerRightShadow.removeAllAnimations()
             layer.mask = nil
         } else {
             let maskLayer = CAShapeLayer()
             maskLayer.path = makeCorneredRect(rect: bounds, withCornerRadius: layer.cornerRadius)
             layer.mask = maskLayer
-            outerDarkSide.isHidden = true
-            outerBrightSide.isHidden = true
-            innerBrightSide.isHidden = false
-            innerDarkSide.isHidden = false
+            outerLowerRightShadow.isHidden = true
+            outerUpperLeftShadow.isHidden = true
+            innerLowerRightShadow.isHidden = false
+            innerUpperLeftShadow.isHidden = false
         }
     }
 
