@@ -125,11 +125,6 @@ class ContainerDemonstrationViewController: UIViewController {
         setLayoutConstraints()
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         view.layer.sublayers?[0].frame = view.bounds

@@ -14,7 +14,6 @@ import UIKit
  view.addSubview(myCont)
  ```
  */
-
 @IBDesignable
 // swiftlint:disable:next type_body_length
 public class ContainerView<ChildView>: UIView where ChildView: UIView {
@@ -62,15 +61,68 @@ public class ContainerView<ChildView>: UIView where ChildView: UIView {
         }
     }
 
-// MARK: Initializers
-    public convenience init(child: ChildView) {
-        defer { self.child = child }
-        self.init(frame: child.frame)
-    }
-
 // MARK: Colors
     public let darkSideColor = UIColor(red: 0.53, green: 0.65, blue: 0.75, alpha: 0.48)
     public let brightSideColor = UIColor.white
+
+// MARK: Properties
+    public var isConvex: Bool {
+        get {
+            return elevation.elevationValue > 0
+        }
+    }
+
+    /**
+     Indicates to what extend the view will look above the surface or carved into the surface
+
+     - parameter elevation: positive value for the efffect of levitation and negative value
+     for the effect of being carved
+     - warning: for good visibility stick to values from -50 to 50
+     */
+    public var elevation: Elevation = .flat {
+        didSet {
+            setNeedsLayout()
+        }
+    }
+
+    // Width of the line that goes around a container view. Use only non negative values.
+    public var strokeWidth: Float = 0 {
+        didSet {
+            strokeWidth = abs(strokeWidth)
+            setNeedsLayout()
+        }
+    }
+
+    public override var backgroundColor: UIColor? {
+        didSet {
+            surface.backgroundColor = backgroundColor?.cgColor
+        }
+    }
+
+    public var child: ChildView? {
+        didSet {
+            oldValue?.removeFromSuperview()
+
+            guard let child = child else { return }
+
+            layer.addSublayer(outerUpperLeftShadow)
+            layer.masksToBounds = false
+            layer.addSublayer(outerLowerRightShadow)
+            layer.addSublayer(surface)
+
+            addSubview(child)
+
+            layer.addSublayer(innerUpperLeftShadow)
+            layer.addSublayer(innerLowerRightShadow)
+            layer.addSublayer(strokeLine)
+
+            // make the child be the same size as its parent
+            child.translatesAutoresizingMaskIntoConstraints = false
+
+            // make the child stick to the edges of the container
+            setChildConstraints()
+        }
+    }
 
 // MARK: Layers
     lazy private var outerUpperLeftShadow = getOuterShadow(color: brightSideColor)
@@ -98,78 +150,39 @@ public class ContainerView<ChildView>: UIView where ChildView: UIView {
         return layer
     }()
 
-    public var child: ChildView? {
-        didSet {
-            oldValue?.removeFromSuperview()
+// MARK: Initializers
+    public convenience init(child: ChildView) {
+        defer { self.child = child }
+        self.init(frame: child.frame)
+    }
 
-            guard let child = child else { return }
+// MARK: Lifecycle methods
+    override public func layoutSubviews() {
+        super.layoutSubviews()
+        updateView()
+    }
 
-            layer.addSublayer(outerUpperLeftShadow)
-            layer.masksToBounds = false
-            layer.addSublayer(outerLowerRightShadow)
-            layer.addSublayer(surface)
-
-            addSubview(child)
-
-            layer.addSublayer(innerUpperLeftShadow)
-            layer.addSublayer(innerLowerRightShadow)
-            layer.addSublayer(strokeLine)
-
-            // make the child be the same size as its parent
-            child.translatesAutoresizingMaskIntoConstraints = false
-
-            // make the child stick to the edges of the container
-            setChildConstraints()
-
+// MARK: CALayerDeledate
+    //We use this to be notified whenever the corner radius of layer changes
+    public override func action(for layer: CALayer, forKey event: String) -> CAAction? {
+        // if layer's corner radius changes, update the layout
+        if event == "cornerRadius" {
             setNeedsLayout()
         }
+        return super.action(for: layer, forKey: event)
     }
 
 // MARK: Constraints
 
-    func setChildConstraints() {
+    private func setChildConstraints() {
         guard let child = child else { return }
         NSLayoutConstraint.activate([
-            child.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            child.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            child.topAnchor.constraint(equalTo: self.topAnchor),
-            child.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            child.trailingAnchor.constraint(equalTo: trailingAnchor),
+            child.leadingAnchor.constraint(equalTo: leadingAnchor),
+            child.topAnchor.constraint(equalTo: topAnchor),
+            child.bottomAnchor.constraint(equalTo: bottomAnchor),
             child.widthAnchor.constraint(equalTo: widthAnchor)
         ])
-    }
-
-// MARK: Properties
-    public var isConvex: Bool {
-        get {
-            return elevation.elevationValue > 0
-        }
-    }
-
-    /**
-     Indicates to what extend the view will look above the surface or carved into the surface
-     
-     - parameter elevation: positive value for the efffect of levitation and negative value
-     for the effect of being carved
-     - warning: for good visibility stick to values from -50 to 50
-     */
-    public var elevation: Elevation = .flat {
-        didSet {
-            setNeedsLayout()
-        }
-    }
-
-    // Width of the line that goes around a container view. Use only non negative values.
-    public var strokeWidth: Float = 0 {
-        didSet {
-            strokeWidth = abs(strokeWidth)
-            setNeedsLayout()
-        }
-    }
-
-    public override var backgroundColor: UIColor? {
-        didSet {
-            surface.backgroundColor = backgroundColor?.cgColor
-        }
     }
 
 // MARK: Auxiliary
@@ -335,16 +348,6 @@ public class ContainerView<ChildView>: UIView where ChildView: UIView {
         return path.copy(using: &transform)!
     }
 
-// MARK: CALayerDeledate
-    //We use this to be notified whenever the corner radius of layer changes
-    public override func action(for layer: CALayer, forKey event: String) -> CAAction? {
-        // if layer's corner radius changes, update the layout
-        if event == "cornerRadius" {
-            setNeedsLayout()
-        }
-        return super.action(for: layer, forKey: event)
-    }
-
 // MARK: Updating functions
     private func updateStrokeLine() {
         let path = makeThickCorneredRect(
@@ -434,10 +437,5 @@ public class ContainerView<ChildView>: UIView where ChildView: UIView {
             innerLowerRightShadow.isHidden = false
             innerUpperLeftShadow.isHidden = false
         }
-    }
-
-    override public func layoutSubviews() {
-        super.layoutSubviews()
-        updateView()
     }
 }
