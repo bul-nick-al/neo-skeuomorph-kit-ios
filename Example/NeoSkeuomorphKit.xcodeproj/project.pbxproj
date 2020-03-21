@@ -10,20 +10,19 @@
 		0360A6F62401BA8E00DC49FE /* ComponentsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0360A6F52401BA8E00DC49FE /* ComponentsTableViewController.swift */; };
 		0360A6F82401D6E100DC49FE /* DetailViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0360A6F72401D6E100DC49FE /* DetailViewManager.swift */; };
 		0360A6FA2401D76D00DC49FE /* UIViewController+SizeChange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0360A6F92401D76D00DC49FE /* UIViewController+SizeChange.swift */; };
-		03DAA05B2401DEA400C77CCE /* ExampleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DAA05A2401DEA400C77CCE /* ExampleViewController.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
-		ABE5A22B5CC255DD41D85E4F /* Pods_NeoSkeuomorphKit_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A87DDD8416104ED0A95DE45 /* Pods_NeoSkeuomorphKit_Example.framework */; };
+		6C26493F1C017DBC6BE99320 /* Pods_NeoSkeuomorphKit_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A87DDD8416104ED0A95DE45 /* Pods_NeoSkeuomorphKit_Example.framework */; };
 		E18503B3240C015000B9A574 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18503B2240C015000B9A574 /* Constants.swift */; };
+		E19A35A224117BA9003CACA4 /* ConstainerDemonstrationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19A35A124117BA9003CACA4 /* ConstainerDemonstrationViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0360A6F52401BA8E00DC49FE /* ComponentsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentsTableViewController.swift; sourceTree = "<group>"; };
 		0360A6F72401D6E100DC49FE /* DetailViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewManager.swift; sourceTree = "<group>"; };
 		0360A6F92401D76D00DC49FE /* UIViewController+SizeChange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+SizeChange.swift"; sourceTree = "<group>"; };
-		03DAA05A2401DEA400C77CCE /* ExampleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleViewController.swift; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* NeoSkeuomorphKit_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NeoSkeuomorphKit_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACD51AFB9204008FA782 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -34,6 +33,7 @@
 		96F6CD79415164C8B5ABB184 /* Pods-NeoSkeuomorphKit_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NeoSkeuomorphKit_Example.debug.xcconfig"; path = "Target Support Files/Pods-NeoSkeuomorphKit_Example/Pods-NeoSkeuomorphKit_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		9A87DDD8416104ED0A95DE45 /* Pods_NeoSkeuomorphKit_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NeoSkeuomorphKit_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E18503B2240C015000B9A574 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		E19A35A124117BA9003CACA4 /* ConstainerDemonstrationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConstainerDemonstrationViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,7 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ABE5A22B5CC255DD41D85E4F /* Pods_NeoSkeuomorphKit_Example.framework in Frameworks */,
+				6C26493F1C017DBC6BE99320 /* Pods_NeoSkeuomorphKit_Example.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -51,7 +51,7 @@
 		03DAA0572401DDEF00C77CCE /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				03DAA05A2401DEA400C77CCE /* ExampleViewController.swift */,
+				E19A35A124117BA9003CACA4 /* ConstainerDemonstrationViewController.swift */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";
@@ -129,7 +129,7 @@
 				607FACCC1AFB9204008FA782 /* Sources */,
 				607FACCD1AFB9204008FA782 /* Frameworks */,
 				607FACCE1AFB9204008FA782 /* Resources */,
-				A1BDEB416ED2245977AFF6FB /* [CP] Embed Pods Frameworks */,
+				3C6D7E938C8EFCF187542157 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -159,10 +159,9 @@
 			};
 			buildConfigurationList = 607FACCB1AFB9204008FA782 /* Build configuration list for PBXProject "NeoSkeuomorphKit" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
 				Base,
 			);
@@ -208,7 +207,7 @@
 			shellPath = /bin/sh;
 			shellScript = "if which ${PODS_ROOT}/SwiftLint/swiftlint >/dev/null; then\n${PODS_ROOT}/SwiftLint/swiftlint --config \"${SRCROOT}/.swiftlint.yml\"\nelse\necho \"error: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nreturn 1\nfi\n";
 		};
-		A1BDEB416ED2245977AFF6FB /* [CP] Embed Pods Frameworks */ = {
+		3C6D7E938C8EFCF187542157 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -259,7 +258,7 @@
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				0360A6F82401D6E100DC49FE /* DetailViewManager.swift in Sources */,
 				0360A6FA2401D76D00DC49FE /* UIViewController+SizeChange.swift in Sources */,
-				03DAA05B2401DEA400C77CCE /* ExampleViewController.swift in Sources */,
+				E19A35A224117BA9003CACA4 /* ConstainerDemonstrationViewController.swift in Sources */,
 				E18503B3240C015000B9A574 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
