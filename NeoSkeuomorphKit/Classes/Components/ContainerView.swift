@@ -62,8 +62,12 @@ public class ContainerView<ChildView>: UIView where ChildView: UIView {
     }
 
 // MARK: Colors
-    public let darkSideColor = UIColor(red: 0.53, green: 0.65, blue: 0.75, alpha: 0.48)
-    public let brightSideColor = UIColor.white
+    public var lowerRightOuterShadowColor = UIColor(red: 0.53, green: 0.65, blue: 0.75, alpha: 0.48)
+    public var upperLeftOuterShadowColor = UIColor.white
+    public var lowerRightInnerShadowColor = UIColor.white
+    public var upperLeftInnerShadowColor = UIColor(red: 0.53, green: 0.65, blue: 0.75, alpha: 0.48)
+    public var lowerRightStrokeColor = UIColor(red: 0.53, green: 0.65, blue: 0.75, alpha: 0.48)
+    public var upperLeftStrokeColor = UIColor.white
 
 // MARK: Properties
     public var isConvex: Bool {
@@ -125,10 +129,10 @@ public class ContainerView<ChildView>: UIView where ChildView: UIView {
     }
 
 // MARK: Layers
-    lazy private var outerUpperLeftShadow = getOuterShadow(color: brightSideColor)
-    lazy private var outerLowerRightShadow = getOuterShadow(color: darkSideColor)
-    lazy private var innerUpperLeftShadow = getInnerShadow(color: darkSideColor.withAlphaComponent(1.0))
-    lazy private var innerLowerRightShadow = getInnerShadow(color: brightSideColor)
+    lazy private var outerUpperLeftShadow = getOuterShadow(color: upperLeftOuterShadowColor)
+    lazy private var outerLowerRightShadow = getOuterShadow(color: lowerRightOuterShadowColor)
+    lazy private var innerUpperLeftShadow = getInnerShadow(color: upperLeftInnerShadowColor.withAlphaComponent(1.0))
+    lazy private var innerLowerRightShadow = getInnerShadow(color: lowerRightInnerShadowColor)
 
     lazy private var surface: CALayer = {
         let surface = CALayer()
@@ -142,7 +146,7 @@ public class ContainerView<ChildView>: UIView where ChildView: UIView {
         mask.lineCap = .round
         let layer = CAGradientLayer()
         layer.masksToBounds = false
-        layer.colors = [brightSideColor.cgColor, darkSideColor.withAlphaComponent(1.0).cgColor]
+        layer.colors = [upperLeftStrokeColor.cgColor, lowerRightStrokeColor.withAlphaComponent(1.0).cgColor]
         layer.locations = [0.4, 1]
         layer.startPoint = CGPoint(x: 0, y: 0)
         layer.endPoint = CGPoint(x: 1, y: 1)
