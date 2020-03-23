@@ -21,7 +21,10 @@ class ComponentsTableViewController: UITableViewController {
 
     var exampleList = [
         // This is a list of examples offered by this sample.
-        Example(title: "Example", subTitle: "ExampleViewController", viewControllerType: ExampleViewController.self)
+        Example(title: "ContainerView",
+                subTitle: "Example of a container view",
+                viewControllerType: ContainerDemonstrationViewController.self
+        )
     ]
 
     override func viewDidLoad() {
