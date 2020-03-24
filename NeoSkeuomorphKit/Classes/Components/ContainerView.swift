@@ -61,15 +61,46 @@ public class ContainerView<ChildView>: UIView where ChildView: UIView {
         }
     }
 
-// MARK: Colors
-    public var lowerRightOuterShadowColor = UIColor(red: 0.53, green: 0.65, blue: 0.75, alpha: 0.48)
-    public var upperLeftOuterShadowColor = UIColor.white
-    public var lowerRightInnerShadowColor = UIColor.white
-    public var upperLeftInnerShadowColor = UIColor(red: 0.53, green: 0.65, blue: 0.75, alpha: 0.48)
-    public var lowerRightStrokeColor = UIColor(red: 0.53, green: 0.65, blue: 0.75, alpha: 0.48)
-    public var upperLeftStrokeColor = UIColor.white
+    // MARK: Colors
+    public var lowerRightOuterShadowColor = UIColor(red: 0.53, green: 0.65, blue: 0.75, alpha: 0.48) {
+        didSet {
+            outerLowerRightShadow.shadowColor = lowerRightOuterShadowColor.cgColor
+        }
+    }
 
-// MARK: Properties
+    public var upperLeftOuterShadowColor = UIColor.white {
+        didSet {
+            outerUpperLeftShadow.shadowColor = upperLeftOuterShadowColor.cgColor
+        }
+    }
+
+    public var lowerRightInnerShadowColor = UIColor.white {
+        didSet {
+            innerLowerRightShadow.shadowColor = lowerRightInnerShadowColor.cgColor
+        }
+    }
+
+    public var upperLeftInnerShadowColor = UIColor(red: 0.53, green: 0.65, blue: 0.75, alpha: 0.48) {
+        didSet {
+            innerUpperLeftShadow.shadowColor = upperLeftInnerShadowColor.cgColor
+        }
+    }
+
+    public var lowerRightBezelColor = UIColor(red: 0.53, green: 0.65, blue: 0.75, alpha: 0.48) {
+        didSet {
+            (bezelLine as? CAGradientLayer)?.colors =
+                [upperLeftBezelColor.cgColor, lowerRightBezelColor.withAlphaComponent(1.0).cgColor]
+        }
+    }
+
+    public var upperLeftBezelColor = UIColor.white {
+        didSet {
+            (bezelLine as? CAGradientLayer)?.colors =
+                [upperLeftBezelColor.cgColor, lowerRightBezelColor.withAlphaComponent(1.0).cgColor]
+        }
+    }
+
+    // MARK: Properties
     public var isConvex: Bool {
         get {
             return elevation.elevationValue > 0
@@ -90,9 +121,9 @@ public class ContainerView<ChildView>: UIView where ChildView: UIView {
     }
 
     // Width of the line that goes around a container view. Use only non negative values.
-    public var strokeWidth: Float = 0 {
+    public var bezelWidth: Float = 0 {
         didSet {
-            strokeWidth = abs(strokeWidth)
+            bezelWidth = abs(bezelWidth)
             setNeedsLayout()
         }
     }
@@ -118,7 +149,7 @@ public class ContainerView<ChildView>: UIView where ChildView: UIView {
 
             layer.addSublayer(innerUpperLeftShadow)
             layer.addSublayer(innerLowerRightShadow)
-            layer.addSublayer(strokeLine)
+            layer.addSublayer(bezelLine)
 
             // make the child be the same size as its parent
             child.translatesAutoresizingMaskIntoConstraints = false
@@ -128,7 +159,7 @@ public class ContainerView<ChildView>: UIView where ChildView: UIView {
         }
     }
 
-// MARK: Layers
+    // MARK: Layers
     lazy private var outerUpperLeftShadow = getOuterShadow(color: upperLeftOuterShadowColor)
     lazy private var outerLowerRightShadow = getOuterShadow(color: lowerRightOuterShadowColor)
     lazy private var innerUpperLeftShadow = getInnerShadow(color: upperLeftInnerShadowColor.withAlphaComponent(1.0))
@@ -140,13 +171,13 @@ public class ContainerView<ChildView>: UIView where ChildView: UIView {
         return surface
     }()
 
-    lazy private var strokeLine: CALayer = {
+    lazy private var bezelLine: CALayer = {
         let mask = CAShapeLayer()
         mask.fillRule = .evenOdd
         mask.lineCap = .round
         let layer = CAGradientLayer()
         layer.masksToBounds = false
-        layer.colors = [upperLeftStrokeColor.cgColor, lowerRightStrokeColor.withAlphaComponent(1.0).cgColor]
+        layer.colors = [upperLeftBezelColor.cgColor, lowerRightBezelColor.withAlphaComponent(1.0).cgColor]
         layer.locations = [0.4, 1]
         layer.startPoint = CGPoint(x: 0, y: 0)
         layer.endPoint = CGPoint(x: 1, y: 1)
@@ -154,19 +185,19 @@ public class ContainerView<ChildView>: UIView where ChildView: UIView {
         return layer
     }()
 
-// MARK: Initializers
+    // MARK: Initializers
     public convenience init(child: ChildView) {
         defer { self.child = child }
         self.init(frame: child.frame)
     }
 
-// MARK: Lifecycle methods
+    // MARK: Lifecycle methods
     override public func layoutSubviews() {
         super.layoutSubviews()
         updateView()
     }
 
-// MARK: CALayerDeledate
+    // MARK: CALayerDeledate
     //We use this to be notified whenever the corner radius of layer changes
     public override func action(for layer: CALayer, forKey event: String) -> CAAction? {
         // if layer's corner radius changes, update the layout
@@ -176,7 +207,7 @@ public class ContainerView<ChildView>: UIView where ChildView: UIView {
         return super.action(for: layer, forKey: event)
     }
 
-// MARK: Constraints
+    // MARK: Constraints
 
     private func setChildConstraints() {
         guard let child = child else { return }
@@ -189,7 +220,7 @@ public class ContainerView<ChildView>: UIView where ChildView: UIView {
         ])
     }
 
-// MARK: Auxiliary
+    // MARK: Auxiliary
     /**
      Get a layer to be used as the outer side of a container view
      
@@ -352,15 +383,15 @@ public class ContainerView<ChildView>: UIView where ChildView: UIView {
         return path.copy(using: &transform)!
     }
 
-// MARK: Updating functions
-    private func updateStrokeLine() {
+    // MARK: Updating functions
+    private func bezelStrokeLine() {
         let path = makeThickCorneredRect(
             rect: bounds,
             withCornerRadius: layer.cornerRadius,
-            lineWidth: CGFloat(strokeWidth)
+            lineWidth: CGFloat(bezelWidth)
         )
-        strokeLine.frame = bounds
-        (strokeLine.mask as? CAShapeLayer)?.path = path
+        bezelLine.frame = bounds
+        (bezelLine.mask as? CAShapeLayer)?.path = path
     }
 
     /**
@@ -420,7 +451,7 @@ public class ContainerView<ChildView>: UIView where ChildView: UIView {
         updateDarkShadow()
         updateBrightShadow()
         updateSurface()
-        updateStrokeLine()
+        bezelStrokeLine()
         child?.layer.cornerRadius = layer.cornerRadius
         if isConvex {
             outerLowerRightShadow.isHidden = false

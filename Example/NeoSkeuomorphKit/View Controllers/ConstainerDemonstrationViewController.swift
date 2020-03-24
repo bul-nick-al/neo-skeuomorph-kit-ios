@@ -112,7 +112,7 @@ class ContainerDemonstrationViewController: UIViewController {
         super.viewDidLoad()
 
         container = ContainerView(child: childView)
-        container.strokeWidth = 1
+        container.bezelWidth = 1
         container.translatesAutoresizingMaskIntoConstraints = false
 
         background.frame = view.bounds
