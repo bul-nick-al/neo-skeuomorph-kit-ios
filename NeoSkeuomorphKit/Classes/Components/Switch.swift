@@ -7,8 +7,32 @@
 
 import UIKit
 
+/// The Switch class declares a property and a method to control its on/off state.
+/// The API is the same as Apple's own UISwitch with the exeption of its
+/// tint colors. It also has a small indicator to its right side. The  `onTintColor` defines the color
+/// of the indicator in the `On` state.
 @IBDesignable
 public class Switch: UIControl {
+
+    public enum LayoutConfiguration {
+        static var switchSize: CGSize {
+            return CGSize(width: 51, height: 31)
+        }
+
+        // We subtract 4 because the bezel width is 1 and the gap is also 1 from both the top and the bottom
+        static var thumbSize: CGSize {
+            return CGSize(width: switchSize.height - 4, height: switchSize.height - 4)
+        }
+
+        static var indicatorMargin: CGFloat {
+            return 8.0
+        }
+
+        /// Offset of the thumb to from the center
+        static var thumbOffset: CGFloat {
+            return switchSize.width / 2 - thumbSize.width / 2 - 2
+        }
+    }
 
     // MARK: Colors
 
@@ -20,10 +44,12 @@ public class Switch: UIControl {
         }
     }
 
+    /// Upper left component of the gradient color which fills the thumb
     public var thumbTintUpperLeftColor = UIColor(red: 227.0/255.0, green: 237.0/255.0, blue: 247.0/255.0, alpha: 1.0) {
         didSet { updateThumbColors() }
     }
 
+    /// Lower right component of the gradient color which fills the thumb
     public var thumbTintLowerRightColor = UIColor.white {
         didSet { updateThumbColors() }
     }
@@ -32,6 +58,9 @@ public class Switch: UIControl {
     public var baseColor = UIColor(red: 222.0/255.0, green: 232.0/255.0, blue: 242.0/255.0, alpha: 1.0) {
         didSet { base.child?.backgroundColor = baseColor }
     }
+
+    /// The companion property of `isOn`.  It is used to separate the
+    private var _isOn: Bool = false
 
     /// A Boolean value that determines the off/on state of the switch.
     @IBInspectable public var isOn: Bool {
@@ -43,77 +72,77 @@ public class Switch: UIControl {
     }
 
     override public var intrinsicContentSize: CGSize {
-        let totalWidth = switchSize.width + indicatorMargin + indicator.intrinsicContentSize.width
-        return CGSize(width: totalWidth, height: switchSize.height)
+        let totalWidth = LayoutConfiguration.switchSize.width + LayoutConfiguration.indicatorMargin
+            + indicator.intrinsicContentSize.width
+        return CGSize(width: totalWidth, height: LayoutConfiguration.switchSize.height)
     }
 
-    private let switchSize = CGSize(width: 51, height: 31)
-
-    // We subtract 4 because the bezel wisth is 1 and the gap is also 1 from both the top and the bottom
-    private lazy var thumbSize = CGSize(width: switchSize.height - 4, height: switchSize.height - 4)
-
-    private let indicatorMargin: CGFloat = 8.0
-
-    /// Offset of the thumb to from the center
-    private lazy var thumbOffset: CGFloat = switchSize.width / 2 - thumbSize.width / 2 - 2
-
     private let animationDuration = 0.2
-
-    private var _isOn: Bool = false
 
     // MARK: Views and layers
     private let indicator: IndicatorView = {
         let indicator = IndicatorView()
+
         indicator.isOn = false
         indicator.translatesAutoresizingMaskIntoConstraints = false
         indicator.isUserInteractionEnabled = false
+
         return indicator
     }()
 
     private lazy var thumb: ContainerView = {
         let thumb = ContainerView(child: UIView())
-        thumb.layer.cornerRadius = thumbSize.width / 2
+
+        thumb.layer.cornerRadius = LayoutConfiguration.thumbSize.width / 2
         thumb.elevation = .custom(elevation: 2)
         thumb.upperLeftOuterShadowColor = .clear
         thumb.translatesAutoresizingMaskIntoConstraints = false
-        thumb.child?.layer.masksToBounds = true
         thumb.isUserInteractionEnabled = false
+
         return thumb
     }()
 
     private lazy var base: ContainerView = {
         let base = ContainerView(child: UIView())
+
         base.child?.backgroundColor = baseColor
         base.elevation = .custom(elevation: -3)
         base.lowerRightInnerShadowColor = .clear
-        base.layer.cornerRadius = switchSize.height / 2
+        base.layer.cornerRadius = LayoutConfiguration.switchSize.height / 2
         base.bezelWidth = 1
         base.translatesAutoresizingMaskIntoConstraints = false
         base.isUserInteractionEnabled = false
+
         return base
     }()
 
     private lazy var thumbContainer: ContainerView = {
         let thumbContainer = ContainerView(child: UIView())
-        thumbContainer.layer.cornerRadius = switchSize.height / 2
+
+        thumbContainer.layer.cornerRadius = LayoutConfiguration.switchSize.height / 2
         thumbContainer.translatesAutoresizingMaskIntoConstraints = false
         thumbContainer.isUserInteractionEnabled = false
+
         return thumbContainer
     }()
 
     private lazy var thumbSurface: CAGradientLayer = {
         let thumbSurface = CAGradientLayer()
+
         thumbSurface.masksToBounds = false
         thumbSurface.colors = [thumbTintUpperLeftColor.cgColor, thumbTintLowerRightColor.cgColor]
         thumbSurface.locations = [-0.3, 1.5]
         thumbSurface.startPoint = CGPoint(x: 0, y: 0)
         thumbSurface.endPoint = CGPoint(x: 1, y: 1)
-        thumbSurface.frame = CGRect(origin: CGPoint.zero, size: thumbSize)
+        thumbSurface.frame = CGRect(origin: CGPoint.zero, size: LayoutConfiguration.thumbSize)
+
         return thumbSurface
     }()
     private lazy var thumbShadow: CALayer = {
+        let radius = LayoutConfiguration.thumbSize.width / 2
+
         let path = UIBezierPath()
-        let radius = thumbSize.width / 2
+
         path.addArc(
             withCenter: CGPoint(x: radius, y: radius+2),
             radius: radius+1,
@@ -121,33 +150,36 @@ public class Switch: UIControl {
             endAngle: 0,
             clockwise: false
         )
+
         let thumbShadow = CAShapeLayer()
+
         thumbShadow.path = path.cgPath
         thumbShadow.fillColor = UIColor.clear.cgColor
         thumbShadow.lineWidth = 1
         thumbShadow.strokeColor = UIColor.black.cgColor
         thumbShadow.shadowOpacity = 0.25
         thumbShadow.shadowRadius = 0.5
+
         return thumbShadow
     }()
 
     private lazy var thumbPositionConstraint: NSLayoutConstraint = {
-        let constraint = thumb.centerXAnchor.constraint(equalTo: base.centerXAnchor, constant: -thumbOffset)
+        let constraint = thumb.centerXAnchor.constraint(
+            equalTo: base.centerXAnchor,
+            constant: -LayoutConfiguration.thumbOffset
+        )
         return constraint
     }()
 
-    public init() {
-        super.init(frame: CGRect(origin: CGPoint.zero, size: switchSize))
-        setUpView()
-    }
-
+    // MARK: Initializers
     public override init(frame: CGRect) {
         super.init(frame: frame)
         setUpView()
     }
 
     public required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: coder)
+        setUpView()
     }
 
     /// Set the state of the switch to On or Off, optionally animating the transition.
@@ -172,20 +204,22 @@ public class Switch: UIControl {
     }
 
     private func setUpView() {
-        UIView.setAnimationsEnabled(false)
+        addSubviews()
+        addTarget(self, action: #selector(toggle), for: .touchUpInside)
+        setAutoLayout()
+    }
+
+    private func addSubviews() {
         addSubview(base)
         addSubview(thumbContainer)
         thumbContainer.addSubview(thumb)
         thumb.child?.layer.addSublayer(thumbSurface)
         thumb.child?.layer.addSublayer(thumbShadow)
         addSubview(indicator)
-        UIView.setAnimationsEnabled(true)
-        addTarget(self, action: #selector(toggle), for: .touchUpInside)
-        setPriorities()
-        setConstraints()
     }
 
-    private func setConstraints() {
+    private func setAutoLayout() {
+        let switchSize = LayoutConfiguration.switchSize
         NSLayoutConstraint.activate([
             base.widthAnchor.constraint(equalToConstant: switchSize.width),
             base.heightAnchor.constraint(equalToConstant: switchSize.height),
@@ -199,18 +233,19 @@ public class Switch: UIControl {
             thumbContainer.leadingAnchor.constraint(equalTo: leadingAnchor)
         ])
         NSLayoutConstraint.activate([
-            thumb.widthAnchor.constraint(equalToConstant: thumbSize.width),
-            thumb.heightAnchor.constraint(equalToConstant: thumbSize.height),
+            thumb.widthAnchor.constraint(equalToConstant: LayoutConfiguration.thumbSize.width),
+            thumb.heightAnchor.constraint(equalToConstant: LayoutConfiguration.thumbSize.height),
             thumb.centerYAnchor.constraint(equalTo: base.child!.centerYAnchor)
         ])
         NSLayoutConstraint.activate([
-            indicator.leadingAnchor.constraint(equalTo: base.trailingAnchor, constant: indicatorMargin),
+            indicator.leadingAnchor.constraint(
+                equalTo: base.trailingAnchor,
+                constant: LayoutConfiguration.indicatorMargin
+            ),
             indicator.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
         thumbPositionConstraint.isActive = true
-    }
 
-    private func setPriorities() {
         setContentHuggingPriority(.defaultHigh, for: .horizontal)
         setContentHuggingPriority(.defaultHigh, for: .vertical)
         setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
@@ -218,8 +253,8 @@ public class Switch: UIControl {
     }
 
     private func updateVisualState() {
-        thumbPositionConstraint.constant = self.isOn ? self.thumbOffset : -self.thumbOffset
-        indicator.isOn = self.isOn
+        thumbPositionConstraint.constant = isOn ? LayoutConfiguration.thumbOffset : -LayoutConfiguration.thumbOffset
+        indicator.isOn = isOn
     }
 
     private func updateThumbColors() {
@@ -227,15 +262,19 @@ public class Switch: UIControl {
     }
 }
 
+
+/// A small indicator that imitates an LED light
 public class IndicatorView: ContainerView<UIView> {
 
     private let size = CGSize(width: 8, height: 8)
 
+    /// Color in the  **On** state
     public var onTintColor: UIColor = .green
+    /// Color in the  **Off** state
     public var offTinrColor: UIColor = UIColor(red: 175.0/255.0, green: 192.0/255.0, blue: 210.0/255.0, alpha: 1.0)
 
     /// A Boolean value that determines the off/on state of the indicator.
-    public var isOn = false {
+    public var isOn: Bool = false {
         didSet {
             child?.backgroundColor = isOn ? onTintColor : offTinrColor
         }
@@ -245,24 +284,20 @@ public class IndicatorView: ContainerView<UIView> {
         return size
     }
 
+    // MARK: Initializers
     public init() {
         super.init(frame: CGRect(origin: CGPoint.zero, size: size))
         setUpView()
         setUpPriorities()
     }
 
-    // MARK: Initializers
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: coder)
     }
 
     /// Set the state of the indicator to the opposite
     public func toggle () {
         isOn = !isOn
-    }
-
-    public func setOn(_ isOn: Bool, animated: Bool) {
-
     }
 
     private func setUpView() {

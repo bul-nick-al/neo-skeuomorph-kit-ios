@@ -154,6 +154,10 @@ public class ContainerView<ChildView>: UIView where ChildView: UIView {
             // make the child be the same size as its parent
             child.translatesAutoresizingMaskIntoConstraints = false
 
+            // enforce the child to crop the content to its edges
+            child.layer.masksToBounds = true
+            child.clipsToBounds = true
+
             // make the child stick to the edges of the container
             setChildConstraints()
         }
