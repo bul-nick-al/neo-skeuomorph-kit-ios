@@ -247,10 +247,10 @@ public class Switch: UIControl {
         ])
         thumbPositionConstraint.isActive = true
 
-        setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        setContentHuggingPriority(.defaultHigh, for: .vertical)
-        setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
-        setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
+        setContentHuggingPriority(.required - 1, for: .horizontal)
+        setContentHuggingPriority(.required - 1, for: .vertical)
+        setContentCompressionResistancePriority(.required - 1, for: .horizontal)
+        setContentCompressionResistancePriority(.required - 1, for: .vertical)
     }
 
     private func updateVisualState() {
@@ -301,13 +301,11 @@ public class IndicatorView: ContainerView<UIView> {
     public override init(frame: CGRect) {
         super.init(frame: CGRect(origin: CGPoint.zero, size: LayoutConfiguration.size))
         setUpView()
-        setUpPriorities()
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setUpView()
-        setUpPriorities()
     }
 
     private func setUpView() {
@@ -323,14 +321,7 @@ public class IndicatorView: ContainerView<UIView> {
         bezelWidth = 1
         elevation = .custom(elevation: -1)
 
-        layer.cornerRadius = LayoutConfiguration.size.width / 2
-    }
-
-    private func setUpPriorities() {
-        setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        setContentHuggingPriority(.defaultHigh, for: .vertical)
-        setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
-        setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
+        layer.cornerRadius = LayoutConfiguration.size.height / 2
     }
 
     private func updateTintColor() {
