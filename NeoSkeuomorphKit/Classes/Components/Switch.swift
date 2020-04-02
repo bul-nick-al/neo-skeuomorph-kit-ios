@@ -14,7 +14,7 @@ import UIKit
 @IBDesignable
 public class Switch: UIControl {
 
-    public enum LayoutConfiguration {
+    private enum LayoutConfiguration {
         static var switchSize: CGSize {
             return CGSize(width: 51, height: 31)
         }
@@ -116,11 +116,12 @@ public class Switch: UIControl {
         return base
     }()
 
-    private lazy var thumbContainer: ContainerView = {
-        let thumbContainer = ContainerView(child: UIView())
+    private lazy var thumbContainer: UIView = {
+        let thumbContainer = UIView()
 
         thumbContainer.layer.cornerRadius = LayoutConfiguration.switchSize.height / 2
         thumbContainer.translatesAutoresizingMaskIntoConstraints = false
+        thumbContainer.clipsToBounds = true
         thumbContainer.isUserInteractionEnabled = false
 
         return thumbContainer
@@ -229,8 +230,8 @@ public class Switch: UIControl {
         NSLayoutConstraint.activate([
             thumbContainer.widthAnchor.constraint(equalToConstant: switchSize.width - 2),
             thumbContainer.heightAnchor.constraint(equalToConstant: switchSize.height - 2),
-            thumbContainer.centerYAnchor.constraint(equalTo: centerYAnchor),
-            thumbContainer.leadingAnchor.constraint(equalTo: leadingAnchor)
+            thumbContainer.centerYAnchor.constraint(equalTo: base.centerYAnchor),
+            thumbContainer.centerXAnchor.constraint(equalTo: base.centerXAnchor)
         ])
         NSLayoutConstraint.activate([
             thumb.widthAnchor.constraint(equalToConstant: LayoutConfiguration.thumbSize.width),
@@ -262,42 +263,51 @@ public class Switch: UIControl {
     }
 }
 
-
 /// A small indicator that imitates an LED light
 public class IndicatorView: ContainerView<UIView> {
 
-    private let size = CGSize(width: 8, height: 8)
+    private enum LayoutConfiguration {
+        static var size: CGSize {
+            return CGSize(width: 8, height: 8)
+        }
+    }
 
     /// Color in the  **On** state
-    public var onTintColor: UIColor = .green
+    public var onTintColor: UIColor = .green {
+        didSet {
+            updateTintColor()
+        }
+    }
     /// Color in the  **Off** state
-    public var offTinrColor: UIColor = UIColor(red: 175.0/255.0, green: 192.0/255.0, blue: 210.0/255.0, alpha: 1.0)
+    public var offTinrColor: UIColor = UIColor(red: 175.0/255.0, green: 192.0/255.0, blue: 210.0/255.0, alpha: 1.0) {
+        didSet {
+            updateTintColor()
+        }
+    }
 
     /// A Boolean value that determines the off/on state of the indicator.
     public var isOn: Bool = false {
         didSet {
-            child?.backgroundColor = isOn ? onTintColor : offTinrColor
+            updateTintColor()
         }
     }
 
     public override var intrinsicContentSize: CGSize {
-        return size
+        return LayoutConfiguration.size
     }
 
     // MARK: Initializers
-    public init() {
-        super.init(frame: CGRect(origin: CGPoint.zero, size: size))
+
+    public override init(frame: CGRect) {
+        super.init(frame: CGRect(origin: CGPoint.zero, size: LayoutConfiguration.size))
         setUpView()
         setUpPriorities()
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-    }
-
-    /// Set the state of the indicator to the opposite
-    public func toggle () {
-        isOn = !isOn
+        setUpView()
+        setUpPriorities()
     }
 
     private func setUpView() {
@@ -306,14 +316,14 @@ public class IndicatorView: ContainerView<UIView> {
         swap(&upperLeftInnerShadowColor, &lowerRightInnerShadowColor)
 
         child = UIView()
-        child?.backgroundColor = offTinrColor
+        updateTintColor()
 
         // There is no white shadow in the indicator
         upperLeftInnerShadowColor = .clear
         bezelWidth = 1
         elevation = .custom(elevation: -1)
 
-        layer.cornerRadius = size.width / 2
+        layer.cornerRadius = LayoutConfiguration.size.width / 2
     }
 
     private func setUpPriorities() {
@@ -321,5 +331,9 @@ public class IndicatorView: ContainerView<UIView> {
         setContentHuggingPriority(.defaultHigh, for: .vertical)
         setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
+    }
+
+    private func updateTintColor() {
+        child?.backgroundColor = isOn ? onTintColor : offTinrColor
     }
 }
