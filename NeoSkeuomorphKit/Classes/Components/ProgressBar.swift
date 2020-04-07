@@ -7,6 +7,7 @@
 
 import UIKit
 
+@IBDesignable
 public class ProgressBar: UIView {
 
     private enum LayoutConfiguration {
@@ -22,16 +23,42 @@ public class ProgressBar: UIView {
             return progressIndicatorHeight / 2
         }
 
+        static var progressIndicatorMargin: CGFloat {
+            return 2
+        }
+
     }
 
-    private var baseColor: UIColor = UIColor(red: 227.0/255.0, green: 237.0/255.0, blue: 247.0/255.0, alpha: 1.0)
-    private var shadowColor = UIColor(red: 0.53, green: 0.65, blue: 0.75, alpha: 0.48)
-    private var indicatorBarInnerShadowColor = UIColor(red: 39/255.0, green: 88/255.0, blue: 126/255.0, alpha: 1.0)
+    // MARK: Colors
+
     /// Upper left component of the gradient color which fills the thumb
     public var progressBarTintLeftColor = UIColor(red: 236.0/255.0, green: 242.0/255.0, blue: 248.0/255.0, alpha: 1.0) {
-        didSet { }
+        didSet { updateTintColors() }
     }
-    public var progress: Float = 0.0 {
+
+    /// Lower right component of the gradient color which fills the thumb
+    public var progressBarTintRightColor = UIColor(red: 213.0/255.0,
+        green: 223.0/255.0,
+        blue: 234.0/255.0,
+        alpha: 1.0) {
+        didSet { updateTintColors() }
+    }
+
+    /// Color of the background behind the inidicator
+    public var baseColor: UIColor = UIColor(red: 227.0/255.0, green: 237.0/255.0, blue: 247.0/255.0, alpha: 1.0) {
+        didSet { base.child?.backgroundColor = baseColor }
+    }
+
+    private var shadowColor = UIColor(red: 0.53, green: 0.65, blue: 0.75, alpha: 0.48)
+    private var indicatorBarInnerShadowColor = UIColor(red: 39/255.0, green: 88/255.0, blue: 126/255.0, alpha: 1.0)
+
+    // MARK: Animation
+    private let animationDuration = 0.2
+    private var isAnimated = false
+
+    // MARK: Progress
+    /// The current progress shown by the receiver.
+    @IBInspectable public var progress: Float = 0.0 {
         didSet {
             if progress > 1.0 { progress = 1.0 }
             if progress < 0.0 { progress = 0.0 }
@@ -39,22 +66,25 @@ public class ProgressBar: UIView {
         }
     }
 
-    private var progressIndicatorWidth: CGFloat {
-        return frame.width > 4 ? (frame.width - 4) * CGFloat(progress) : 0
-    }
+    /// Adjusts the current progress shown by the receiver, optionally animating the change.
+    public func setProgress(_ progress: Float, animated: Bool) {
+        self.progress = progress
+        self.isAnimated = animated
+        self.updateProgressIndicator()
 
-    /// Lower right component of the gradient color which fills the thumb
-    public var progressBarTintRightColor = UIColor(
-        red: 213.0/255.0,
-        green: 223.0/255.0,
-        blue: 234.0/255.0,
-        alpha: 1.0) {
-        didSet { }
+        layoutIfNeeded()
+
+        UIView.animate(withDuration: animated ? 0 : 0) { [weak self] in
+            guard let self = self else { return }
+            self.layoutIfNeeded()
+        }
     }
 
     public override var intrinsicContentSize: CGSize {
         return CGSize(width: UIView.noIntrinsicMetric, height: LayoutConfiguration.height)
     }
+
+    // MARK: Layers and views
 
     private lazy var base: ContainerView = {
         let baseView = UIView()
@@ -70,20 +100,24 @@ public class ProgressBar: UIView {
         return base
     }()
 
-    private lazy var progressIndicator: UIView = {
+    /// Displays the current progress
+    @objc private lazy var progressIndicator: UIView = {
         let progressIndicator = UIView()
 
         progressIndicator.layer.shadowOffset = CGSize(width: -1, height: 2)
         progressIndicator.layer.shadowOpacity = 0.8
         progressIndicator.layer.shadowColor = shadowColor.cgColor
-
         progressIndicator.layer.cornerRadius = LayoutConfiguration.progressIndicatorRadius
 
         progressIndicator.translatesAutoresizingMaskIntoConstraints = false
 
+        progressIndicator.layer.addSublayer(progressIndicatorSurface)
+        progressIndicator.layer.addSublayer(progressIndicatorShadow)
+
         return progressIndicator
     }()
 
+    /// The inner bottom shadow of `progressIndicator`
     private lazy var progressIndicatorShadow: CAShapeLayer = {
         let progressIndicatorShadow = CAShapeLayer()
 
@@ -100,44 +134,28 @@ public class ProgressBar: UIView {
         return progressIndicatorShadow
     }()
 
+    /// Gradient surface of `progressIndicator`
     private lazy var progressIndicatorSurface: CAGradientLayer = {
         let progressIndicatorSurface = CAGradientLayer()
 
         progressIndicatorSurface.masksToBounds = false
+        progressIndicatorSurface.cornerRadius = LayoutConfiguration.progressIndicatorRadius
         progressIndicatorSurface.colors = [progressBarTintLeftColor.cgColor, progressBarTintRightColor.cgColor]
         progressIndicatorSurface.locations = [-0.3, 1.5]
         progressIndicatorSurface.startPoint = CGPoint(x: 0, y: 0.5)
         progressIndicatorSurface.endPoint = CGPoint(x: 1, y: 0.5)
-        progressIndicatorSurface.cornerRadius = LayoutConfiguration.progressIndicatorRadius
 
         return progressIndicatorSurface
     }()
 
+    /// Defines the width of `progressIndicator` to display the `progress`
     private lazy var progressIndicatorWidthConstraint: NSLayoutConstraint = {
         let constraint = progressIndicator.widthAnchor.constraint(equalToConstant: 0)
         constraint.isActive = true
         return constraint
     }()
 
-    private func updateProgressIndicator() {
-        progressIndicatorShadow.path = getInnerShadowPath()
-
-        progressIndicatorWidthConstraint.constant = progressIndicatorWidth
-        progressIndicatorSurface.frame = CGRect(
-            x: 0,
-            y: 0,
-            width: progressIndicator.bounds.width,
-            height: LayoutConfiguration.progressIndicatorHeight
-        )
-
-        progressIndicatorShadow.frame = CGRect(
-            x: 0,
-            y: 0,
-            width: progressIndicator.bounds.width,
-            height: LayoutConfiguration.progressIndicatorHeight
-        )
-    }
-
+    // MARK: Auxiliary
     private func getInnerShadowPath() -> CGPath {
         let radius = LayoutConfiguration.progressIndicatorRadius
         let path = UIBezierPath()
@@ -163,21 +181,83 @@ public class ProgressBar: UIView {
         return path.cgPath
     }
 
+    func animatePathChange(for layer: CAShapeLayer, toPath: CGPath) {
+        let animation = CABasicAnimation(keyPath: "path")
+        animation.duration = self.isAnimated ? self.animationDuration : 0
+        animation.fromValue = layer.path
+        animation.toValue = toPath
+        animation.timingFunction = CAMediaTimingFunction(name: .default)
+        progressIndicatorShadow.add(animation, forKey: "path")
+    }
+
+    // MARK: KVO
+
+    /*
+     progressIndicator's width is defined by progressIndicatorWidthConstraint, however the sublayers
+     of its layer should also be updated when the width changes. KVO is used here for this reason
+     */
+
+    private var kvoToken: NSKeyValueObservation?
+
+    private func setKvo() {
+        kvoToken = progressIndicator.observe(\.bounds, options: .new) { (_, _) in
+
+            let path = self.getInnerShadowPath()
+
+            // Change and animate path shadow
+            self.animatePathChange(for: self.progressIndicatorShadow, toPath: path)
+            self.progressIndicatorShadow.path = path
+
+            // Change and animate surface's and shadow's frames and animate
+            CATransaction.begin()
+            CATransaction.setAnimationDuration(self.isAnimated ? self.animationDuration : 0)
+
+            // updating the gradient surface
+            self.progressIndicatorSurface.frame = CGRect(
+                x: 0,
+                y: 0,
+                width: self.progressIndicator.bounds.width,
+                height: LayoutConfiguration.progressIndicatorHeight
+            )
+
+            // updating the inner shadow frame
+            self.progressIndicatorShadow.frame = CGRect(
+                x: 0,
+                y: 0,
+                width: self.progressIndicator.bounds.width,
+                height: LayoutConfiguration.progressIndicatorHeight
+            )
+
+            CATransaction.commit()
+
+            self.isAnimated = false
+        }
+    }
+
+    // MARK: Initializers
     public override init(frame: CGRect) {
         super.init(frame: frame)
         setUpView()
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: coder)
+        setUpView()
     }
 
-    func setUpView() {
+    // MARK: Setup and update
+    private func setUpView() {
+        setKvo()
+        addSubviews()
+        setLayout()
+    }
+
+    private func addSubviews() {
         addSubview(base)
         base.addSubview(progressIndicator)
-        progressIndicator.layer.addSublayer(progressIndicatorSurface)
-        progressIndicator.layer.addSublayer(progressIndicatorShadow)
+    }
 
+    private func setLayout() {
         NSLayoutConstraint.activate([
             base.heightAnchor.constraint(equalToConstant: LayoutConfiguration.height),
             base.centerYAnchor.constraint(equalTo: centerYAnchor),
@@ -186,13 +266,41 @@ public class ProgressBar: UIView {
         ])
 
         NSLayoutConstraint.activate([
-            progressIndicator.topAnchor.constraint(equalTo: base.topAnchor, constant: 2),
-            progressIndicator.leadingAnchor.constraint(equalTo: base.leadingAnchor, constant: 2),
+            progressIndicator.topAnchor.constraint(
+                equalTo: base.topAnchor,
+                constant: LayoutConfiguration.progressIndicatorMargin
+            ),
+            progressIndicator.leadingAnchor.constraint(
+                equalTo: base.leadingAnchor,
+                constant: LayoutConfiguration.progressIndicatorMargin
+            ),
             progressIndicator.heightAnchor.constraint(equalToConstant: LayoutConfiguration.progressIndicatorHeight),
         ])
     }
 
-    public override func layoutSubviews() {
-        updateProgressIndicator()
+    /* progressIndicatorWidthConstraint's multiplier property is read-only, that's why we
+       remove the old constraint and create a new one to update the progressIndicator */
+    private func updateProgressIndicator() {
+        progressIndicatorWidthConstraint.isActive = false
+
+        progressIndicatorWidthConstraint = progressIndicator
+            .widthAnchor.constraint(
+                equalTo: base.widthAnchor,
+                multiplier: CGFloat(progress),
+                // to account the fact that the inicator has a margin of 2 point to each side of the base
+                constant: -(2 * LayoutConfiguration.progressIndicatorMargin) * CGFloat(progress)
+        )
+
+        progressIndicatorWidthConstraint.isActive = true
+
+    }
+
+    private func updateTintColors() {
+        progressIndicatorSurface.colors = [progressBarTintLeftColor.cgColor, progressBarTintRightColor.cgColor]
+    }
+
+    deinit {
+        // stop the observation
+        kvoToken?.invalidate()
     }
 }
