@@ -24,6 +24,10 @@ class ComponentsTableViewController: UITableViewController {
         Example(title: "ContainerView",
                 subTitle: "Example of a container view",
                 viewControllerType: ContainerDemonstrationViewController.self
+        ),
+        Example(title: "ProgressBarView",
+                subTitle: "Example of a progress bar view",
+                viewControllerType: ProgressBarDemonstrationViewController.self
         )
     ]
 
