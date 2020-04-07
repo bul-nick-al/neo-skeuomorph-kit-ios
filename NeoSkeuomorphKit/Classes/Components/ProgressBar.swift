@@ -205,7 +205,9 @@ public class ProgressBar: UIView {
             let path = self.getInnerShadowPath()
 
             // Change and animate path shadow
-            self.animatePathChange(for: self.progressIndicatorShadow, toPath: path)
+            if self.isAnimated {
+                self.animatePathChange(for: self.progressIndicatorShadow, toPath: path)
+            }
             self.progressIndicatorShadow.path = path
 
             // Change and animate surface's and shadow's frames and animate
