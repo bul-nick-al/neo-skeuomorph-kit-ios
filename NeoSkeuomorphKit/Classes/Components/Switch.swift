@@ -60,7 +60,11 @@ public class Switch: UIControl {
     }
 
     /// The companion property of `isOn`.  It is used to separate the
-    private var _isOn: Bool = false
+    private var _isOn: Bool = false {
+        didSet {
+            sendActions(for: .valueChanged)
+        }
+    }
 
     /// A Boolean value that determines the off/on state of the switch.
     @IBInspectable public var isOn: Bool {
@@ -129,7 +133,6 @@ public class Switch: UIControl {
 
     private lazy var thumbSurface: CAGradientLayer = {
         let thumbSurface = CAGradientLayer()
-
         thumbSurface.masksToBounds = false
         thumbSurface.colors = [thumbTintUpperLeftColor.cgColor, thumbTintLowerRightColor.cgColor]
         thumbSurface.locations = [-0.3, 1.5]
