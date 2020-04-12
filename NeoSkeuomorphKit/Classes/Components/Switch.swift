@@ -195,6 +195,7 @@ public class Switch: UIControl {
     public func setOn(_ isOn: Bool, animated: Bool) {
         layoutIfNeeded()
         _isOn = isOn
+
         UIView.animate(withDuration: animated ? animationDuration : 0) { [weak self] in
             guard let self = self else { return }
             self.updateVisualState()
@@ -203,13 +204,21 @@ public class Switch: UIControl {
     }
 
     /// Change the state to the opposite
-    @objc private func toggle() {
+    @objc private func toggleOnTouch() {
+        let lightImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+
+        // prepare the taptic engine to trigger
+        lightImpactFeedbackGenerator.prepare()
+
         setOn(!isOn, animated: true)
+
+        // trigger the haptic feedback
+        lightImpactFeedbackGenerator.impactOccurred()
     }
 
     private func setUpView() {
         addSubviews()
-        addTarget(self, action: #selector(toggle), for: .touchUpInside)
+        addTarget(self, action: #selector(toggleOnTouch), for: .touchUpInside)
         setAutoLayout()
     }
 
