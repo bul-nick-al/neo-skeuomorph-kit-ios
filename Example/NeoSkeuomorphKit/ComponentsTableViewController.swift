@@ -24,6 +24,10 @@ class ComponentsTableViewController: UITableViewController {
         Example(title: "ContainerView",
                 subTitle: "Example of a container view",
                 viewControllerType: ContainerDemonstrationViewController.self
+        ),
+        Example(title: "Switch",
+                subTitle: "Example of a switch",
+                viewControllerType: SwitchDemonstrationViewController.self
         )
     ]
 
