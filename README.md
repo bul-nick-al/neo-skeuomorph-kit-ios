@@ -9,8 +9,30 @@
 
 ### Container
 
+[Video](https://youtu.be/CdFR2_WDpFs)
+
 ![](https://github.com/bul-nick-al/neo-skeuomorph-kit-ios/blob/develop/demo/containerConvex.png)
 ![](https://github.com/bul-nick-al/neo-skeuomorph-kit-ios/blob/develop/demo/containerConcave.png)
+
+### Switch
+
+[Video](https://youtu.be/-lsDUwfXHZ0)
+
+![](https://github.com/bul-nick-al/neo-skeuomorph-kit-ios/blob/develop/demo/switchOn.png)
+![](https://github.com/bul-nick-al/neo-skeuomorph-kit-ios/blob/develop/demo/switchOff.png)
+
+### Switch3
+
+[Video](https://youtu.be/atYNqaVyQF8)
+
+![](https://github.com/bul-nick-al/neo-skeuomorph-kit-ios/blob/develop/demo/switch3On.png)
+![](https://github.com/bul-nick-al/neo-skeuomorph-kit-ios/blob/develop/demo/switch3Off.png)
+
+### Progress Bar
+
+[Video](https://youtu.be/gvkTfJveh4g)
+
+![](https://github.com/bul-nick-al/neo-skeuomorph-kit-ios/blob/develop/demo/progress.png)
 
 ## Example
 
