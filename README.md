@@ -63,6 +63,7 @@ pod 'NeoSkeuomorphKit'
 ## Authors
 
 Bulat Khabirov, khabiroff_b@me.com
+
 Nikolay Buldakov, bul-nick-al@ya.ru
 
 ## License
