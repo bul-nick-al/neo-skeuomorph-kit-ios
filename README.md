@@ -45,6 +45,8 @@ Constainer | Switch | Big Switch | Progress bar
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
+<!---
+
 ## Requirements
 
 ## Installation
@@ -56,9 +58,12 @@ it, simply add the following line to your Podfile:
 pod 'NeoSkeuomorphKit'
 ```
 
-## Author
+--->
 
-Nikolay, bul-nick-al@ya.ru
+## Authors
+
+Bulat Khabirov, khabiroff_b@me.com
+Nikolay Buldakov, bul-nick-al@ya.ru
 
 ## License
 
