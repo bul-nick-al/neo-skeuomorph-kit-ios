@@ -89,6 +89,7 @@ public class Switch3: UIControl {
         get { return _isOn }
         set {
             guard _isOn != newValue else { return }
+            _isOn = newValue
             updateVisualState()
         }
     }
@@ -178,7 +179,7 @@ public class Switch3: UIControl {
     private lazy var thumbContainer: UIView = {
         let thumbContainer = UIView()
 
-        thumbContainer.layer.cornerRadius = LayoutConfiguration.baseRadius
+        thumbContainer.layer.cornerRadius = LayoutConfiguration.baseRadius - 1
         thumbContainer.translatesAutoresizingMaskIntoConstraints = false
         thumbContainer.clipsToBounds = true
         thumbContainer.isUserInteractionEnabled = false
@@ -231,6 +232,7 @@ public class Switch3: UIControl {
 
         UIView.animate(withDuration: animated ? animationDuration : 0) { [weak self] in
             guard let self = self else { return }
+            if animated { self.triggerHapticEngine() }
             self.updateVisualState()
             self.layoutIfNeeded()
         }
@@ -238,20 +240,16 @@ public class Switch3: UIControl {
 
     /// Change the state to the opposite
     @objc private func toggleOnTouch() {
-        let lightImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
-
-        // prepare the taptic engine to trigger
-        lightImpactFeedbackGenerator.prepare()
-
         setOn(!isOn, animated: true)
-
-        // trigger the haptic feedback
-        lightImpactFeedbackGenerator.impactOccurred()
     }
+
+    // MARK: View setup
 
     private func setUpView() {
         addSubviews()
         addTarget(self, action: #selector(toggleOnTouch), for: .touchUpInside)
+        // add UIPanGestureRecognizer to recognise swipes
+        addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(trackPan(_:))))
         setAutoLayout()
     }
 
@@ -309,6 +307,8 @@ public class Switch3: UIControl {
             thumbContainer.backgroundColor?.withAlphaComponent(1.0)
     }
 
+    // MARK: Auxiliary
+
     private func updateThumbColor() {
         thumb.child?.backgroundColor = thumbTintColor
     }
@@ -358,5 +358,66 @@ public class Switch3: UIControl {
         )
 
         return path.cgPath
+    }
+
+    @objc private func trackPan(_ gestureRecognizer: UIPanGestureRecognizer) {
+        guard gestureRecognizer.view != nil else {return}
+
+        let translation = gestureRecognizer.translation(in: gestureRecognizer.view!.superview)
+
+        // when a pan has ended, complete the movement in case the switch isn't at an edge
+        if gestureRecognizer.state == .ended {
+            if thumbPositionConstraint.constant > 0
+                && thumbPositionConstraint.constant < LayoutConfiguration.thumbOffset {
+                setOn(true, animated: true)
+            }
+
+            if thumbPositionConstraint.constant < 0
+                && thumbPositionConstraint.constant > -LayoutConfiguration.thumbOffset {
+                setOn(false, animated: true)
+            }
+        }
+        // in case of a movement, make the thumb move and change switch's state accordingly
+        else if gestureRecognizer.state != .cancelled {
+
+            // calculate how far from the left edge the thumb is (relatively to the most right position)
+            // 1 - (current position) / (total length)
+            let movementRatio = 1 - (translation.x + LayoutConfiguration.thumbOffset)
+                / (2 * LayoutConfiguration.thumbOffset)
+
+            // adjust the base color accrding to thumb's relative position
+            thumbContainer.backgroundColor = thumbContainer.backgroundColor?.withAlphaComponent(movementRatio)
+
+            // handle the edge cases, when the thumbs reaches the edges
+            if translation.x >= LayoutConfiguration.thumbOffset {
+                // if it moved to the right edge, update the state
+                // if it was there before, the state has been changed before, don't update
+                if thumbPositionConstraint.constant != LayoutConfiguration.thumbOffset {
+                    setOn(true, animated: true)
+                    thumbPositionConstraint.constant = LayoutConfiguration.thumbOffset
+                }
+            } else if translation.x <= -LayoutConfiguration.thumbOffset {
+                // if it moved to the left edge, update the state
+                // if it was there before, the state has been changed before, don't update
+                if thumbPositionConstraint.constant != -LayoutConfiguration.thumbOffset {
+                    setOn(false, animated: true)
+                    thumbPositionConstraint.constant = -LayoutConfiguration.thumbOffset
+                }
+            } else {
+                // in nothing interesting happened, just move the thumb
+                thumbPositionConstraint.constant = translation.x
+            }
+        } else {
+           // On cancellation, just set to false.
+            setOn(false, animated: true)
+        }
+    }
+
+    private func triggerHapticEngine() {
+        let lightImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+        // prepare the taptic engine to trigger
+        lightImpactFeedbackGenerator.prepare()
+        // trigger the haptic feedback
+        lightImpactFeedbackGenerator.impactOccurred()
     }
 }
