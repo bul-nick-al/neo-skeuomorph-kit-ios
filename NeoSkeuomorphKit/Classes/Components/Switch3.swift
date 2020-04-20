@@ -232,7 +232,6 @@ public class Switch3: UIControl {
 
         UIView.animate(withDuration: animated ? animationDuration : 0) { [weak self] in
             guard let self = self else { return }
-            if animated { self.triggerHapticEngine() }
             self.updateVisualState()
             self.layoutIfNeeded()
         }
@@ -240,6 +239,7 @@ public class Switch3: UIControl {
 
     /// Change the state to the opposite
     @objc private func toggleOnTouch() {
+        triggerHapticEngine()
         setOn(!isOn, animated: true)
     }
 
@@ -360,25 +360,15 @@ public class Switch3: UIControl {
         return path.cgPath
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     @objc private func trackPan(_ gestureRecognizer: UIPanGestureRecognizer) {
         guard gestureRecognizer.view != nil else {return}
 
         let translation = gestureRecognizer.translation(in: gestureRecognizer.view!.superview)
 
-        // when a pan has ended, complete the movement in case the switch isn't at an edge
-        if gestureRecognizer.state == .ended {
-            if thumbPositionConstraint.constant > 0
-                && thumbPositionConstraint.constant < LayoutConfiguration.thumbOffset {
-                setOn(true, animated: true)
-            }
-
-            if thumbPositionConstraint.constant < 0
-                && thumbPositionConstraint.constant > -LayoutConfiguration.thumbOffset {
-                setOn(false, animated: true)
-            }
-        }
-        // in case of a movement, make the thumb move and change switch's state accordingly
-        else if gestureRecognizer.state != .cancelled {
+        switch gestureRecognizer.state {
+        case .changed, .possible, .began:
+            // in case of a movement, make the thumb move and change switch's state accordingly
 
             // calculate how far from the left edge the thumb is (relatively to the most right position)
             // 1 - (current position) / (total length)
@@ -393,22 +383,35 @@ public class Switch3: UIControl {
                 // if it moved to the right edge, update the state
                 // if it was there before, the state has been changed before, don't update
                 if thumbPositionConstraint.constant != LayoutConfiguration.thumbOffset {
-                    setOn(true, animated: true)
+                    triggerHapticEngine()
                     thumbPositionConstraint.constant = LayoutConfiguration.thumbOffset
                 }
             } else if translation.x <= -LayoutConfiguration.thumbOffset {
                 // if it moved to the left edge, update the state
                 // if it was there before, the state has been changed before, don't update
                 if thumbPositionConstraint.constant != -LayoutConfiguration.thumbOffset {
-                    setOn(false, animated: true)
+                    triggerHapticEngine()
                     thumbPositionConstraint.constant = -LayoutConfiguration.thumbOffset
                 }
             } else {
                 // in nothing interesting happened, just move the thumb
                 thumbPositionConstraint.constant = translation.x
             }
-        } else {
-           // On cancellation, just set to false.
+        case .ended:
+            if thumbPositionConstraint.constant != -LayoutConfiguration.thumbOffset
+                && thumbPositionConstraint.constant != LayoutConfiguration.thumbOffset {
+                triggerHapticEngine()
+            }
+            // when a pan has ended, complete the movement in case the switch isn't at an edge
+            if thumbPositionConstraint.constant > 0 {
+                setOn(true, animated: true)
+            } else {
+                setOn(false, animated: true)
+            }
+        case .cancelled, .failed:
+            // On cancellation, just set to false.
+            setOn(false, animated: true)
+        @unknown default:
             setOn(false, animated: true)
         }
     }
