@@ -32,5 +32,6 @@ something non-trivial, like the aforementioned designs.
   s.swift_version = '5.1'
 
   s.source_files = 'NeoSkeuomorphKit/Classes/**/*.{swift,h,m}'
+  s.resources = ['NeoSkeuomorphKit/Assets/*']
   s.frameworks = 'UIKit'
 end

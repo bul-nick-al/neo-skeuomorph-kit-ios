@@ -9,14 +9,14 @@ import UIKit
 
 /// The Switch class declares a property and a method to control its on/off state.
 /// The API is the same as Apple's own UISwitch with the exeption of its
-/// tint colors. It also has a small indicator to its right side. The  `onTintColor` defines the color
-/// of the indicator in the `On` state.
+/// tint colors.
 @IBDesignable
-public class Switch: UIControl {
+// swiftlint:disable:next type_body_length
+public class Switch3: UIControl {
 
     private enum LayoutConfiguration {
         static var switchSize: CGSize {
-            return CGSize(width: 51, height: 31)
+            return CGSize(width: 80, height: 40)
         }
 
         // We subtract 4 because the bezel width is 1 and the gap is also 1 from both the top and the bottom
@@ -24,39 +24,57 @@ public class Switch: UIControl {
             return CGSize(width: switchSize.height - 4, height: switchSize.height - 4)
         }
 
-        static var indicatorMargin: CGFloat {
-            return 8.0
-        }
-
         /// Offset of the thumb to from the center
         static var thumbOffset: CGFloat {
             return switchSize.width / 2 - thumbSize.width / 2 - 2
+        }
+
+        /// Offset of the thumb to from the center
+        static var baseRadius: CGFloat {
+            return 12
+        }
+
+        static var thumbRadius: CGFloat {
+            return 10
+        }
+
+        static var fourDotsSize: CGSize {
+            return CGSize(width: 16, height: 16)
+        }
+
+        static var dotSize: CGSize {
+            return CGSize(width: 6, height: 6)
+        }
+
+        static var arrowMargin: CGFloat {
+            return 13
         }
     }
 
     // MARK: Colors
 
-    /// Color of the indicator when the switch is turned on
-    public var onTintColor: UIColor? {
+    /// color which fills the thumb
+    public var thumbTintColor = UIColor(red: 227.0/255.0, green: 237.0/255.0, blue: 247.0/255.0, alpha: 1.0) {
+        didSet { updateThumbColor() }
+    }
+
+    /// Color of the base behind the thumb in the `On` state
+    public var onTintColor = UIColor(red: 222.0/255.0, green: 232.0/255.0, blue: 242.0/255.0, alpha: 1.0) {
+        didSet { base.child?.backgroundColor = onTintColor }
+    }
+
+    /// Color of the base behind the thumb in the `Off` state
+    public var offTintColor = UIColor(red: 161.0/255.0, green: 184.0/255.0, blue: 207.0/255.0, alpha: 1.0) {
+        didSet { thumbContainer.backgroundColor = offTintColor.withAlphaComponent(isOn ? 0.0 : 1.0) }
+    }
+
+    /// color of the four dots on the thumb
+    public var dotColor = UIColor(red: 214.0/255.0, green: 224.0/255.0, blue: 234.0/255.0, alpha: 1.0) {
         didSet {
-            guard let onTintColor = onTintColor else { return }
-            indicator.onTintColor = onTintColor
+            fourDots.subviews.forEach {
+                ($0 as? ContainerView<UIView>)?.child?.backgroundColor = dotColor
+            }
         }
-    }
-
-    /// Upper left component of the gradient color which fills the thumb
-    public var thumbTintUpperLeftColor = UIColor(red: 227.0/255.0, green: 237.0/255.0, blue: 247.0/255.0, alpha: 1.0) {
-        didSet { updateThumbColors() }
-    }
-
-    /// Lower right component of the gradient color which fills the thumb
-    public var thumbTintLowerRightColor = UIColor.white {
-        didSet { updateThumbColors() }
-    }
-
-    /// Color of the base behind the thumb
-    public var baseColor = UIColor(red: 222.0/255.0, green: 232.0/255.0, blue: 242.0/255.0, alpha: 1.0) {
-        didSet { base.child?.backgroundColor = baseColor }
     }
 
     /// The companion property of `isOn`.  It is used to separate the
@@ -76,43 +94,80 @@ public class Switch: UIControl {
     }
 
     override public var intrinsicContentSize: CGSize {
-        let totalWidth = LayoutConfiguration.switchSize.width + LayoutConfiguration.indicatorMargin
-            + indicator.intrinsicContentSize.width
+        let totalWidth = LayoutConfiguration.switchSize.width
         return CGSize(width: totalWidth, height: LayoutConfiguration.switchSize.height)
     }
 
     private let animationDuration = 0.2
 
     // MARK: Views and layers
-    private let indicator: IndicatorView = {
-        let indicator = IndicatorView()
-
-        indicator.isOn = false
-        indicator.translatesAutoresizingMaskIntoConstraints = false
-        indicator.isUserInteractionEnabled = false
-
-        return indicator
-    }()
 
     private lazy var thumb: ContainerView = {
         let thumb = ContainerView(child: UIView())
 
-        thumb.layer.cornerRadius = LayoutConfiguration.thumbSize.width / 2
+        thumb.layer.cornerRadius = LayoutConfiguration.thumbRadius
         thumb.elevation = .custom(elevation: 2)
         thumb.upperLeftOuterShadowColor = .clear
         thumb.translatesAutoresizingMaskIntoConstraints = false
         thumb.isUserInteractionEnabled = false
+        thumb.child?.backgroundColor = thumbTintColor
 
         return thumb
+    }()
+
+    private lazy var fourDots: UIView = {
+        let container = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 16))
+
+        let distance: CGFloat = 10.0
+
+        container.addSubview(createDot(
+            origin: CGPoint(
+                x: 0,
+                y: 0)
+            )
+        )
+        container.addSubview(createDot(
+            origin: CGPoint(
+                x: 0,
+                y: distance)
+            )
+        )
+        container.addSubview(createDot(
+            origin: CGPoint(
+                x: distance,
+                y: 0)
+            )
+        )
+        container.addSubview(createDot(
+            origin: CGPoint(
+                x: distance,
+                y: distance)
+            )
+        )
+
+        container.translatesAutoresizingMaskIntoConstraints = false
+
+        return container
+    }()
+
+    private lazy var arrow: UIImageView = {
+        let bundle = Bundle(for: Self.self)
+        let image = UIImage(named: "arrow", in: bundle, compatibleWith: nil)
+
+        let view = UIImageView(image: image)
+        view.contentMode = .scaleAspectFit
+        view.translatesAutoresizingMaskIntoConstraints = false
+
+        return view
     }()
 
     private lazy var base: ContainerView = {
         let base = ContainerView(child: UIView())
 
-        base.child?.backgroundColor = baseColor
+        base.child?.backgroundColor = onTintColor
         base.elevation = .custom(elevation: -3)
         base.lowerRightInnerShadowColor = .clear
-        base.layer.cornerRadius = LayoutConfiguration.switchSize.height / 2
+        base.layer.cornerRadius = LayoutConfiguration.baseRadius
         base.bezelWidth = 1
         base.translatesAutoresizingMaskIntoConstraints = false
         base.isUserInteractionEnabled = false
@@ -123,41 +178,19 @@ public class Switch: UIControl {
     private lazy var thumbContainer: UIView = {
         let thumbContainer = UIView()
 
-        thumbContainer.layer.cornerRadius = LayoutConfiguration.switchSize.height / 2
+        thumbContainer.layer.cornerRadius = LayoutConfiguration.baseRadius
         thumbContainer.translatesAutoresizingMaskIntoConstraints = false
         thumbContainer.clipsToBounds = true
         thumbContainer.isUserInteractionEnabled = false
+        thumbContainer.backgroundColor = offTintColor
 
         return thumbContainer
     }()
 
-    private lazy var thumbSurface: CAGradientLayer = {
-        let thumbSurface = CAGradientLayer()
-        thumbSurface.masksToBounds = false
-        thumbSurface.colors = [thumbTintUpperLeftColor.cgColor, thumbTintLowerRightColor.cgColor]
-        thumbSurface.locations = [-0.3, 1.5]
-        thumbSurface.startPoint = CGPoint(x: 0, y: 0)
-        thumbSurface.endPoint = CGPoint(x: 1, y: 1)
-        thumbSurface.frame = CGRect(origin: CGPoint.zero, size: LayoutConfiguration.thumbSize)
-
-        return thumbSurface
-    }()
     private lazy var thumbShadow: CALayer = {
-        let radius = LayoutConfiguration.thumbSize.width / 2
-
-        let path = UIBezierPath()
-
-        path.addArc(
-            withCenter: CGPoint(x: radius, y: radius+2),
-            radius: radius+1,
-            startAngle: .pi,
-            endAngle: 0,
-            clockwise: false
-        )
-
         let thumbShadow = CAShapeLayer()
 
-        thumbShadow.path = path.cgPath
+        thumbShadow.path = getShadowPath()
         thumbShadow.fillColor = UIColor.clear.cgColor
         thumbShadow.lineWidth = 1
         thumbShadow.strokeColor = UIColor.black.cgColor
@@ -226,9 +259,9 @@ public class Switch: UIControl {
         addSubview(base)
         addSubview(thumbContainer)
         thumbContainer.addSubview(thumb)
-        thumb.child?.layer.addSublayer(thumbSurface)
+        thumb.child?.addSubview(fourDots)
         thumb.child?.layer.addSublayer(thumbShadow)
-        addSubview(indicator)
+        base.child?.addSubview(arrow)
     }
 
     private func setAutoLayout() {
@@ -251,11 +284,14 @@ public class Switch: UIControl {
             thumb.centerYAnchor.constraint(equalTo: base.child!.centerYAnchor)
         ])
         NSLayoutConstraint.activate([
-            indicator.leadingAnchor.constraint(
-                equalTo: base.trailingAnchor,
-                constant: LayoutConfiguration.indicatorMargin
-            ),
-            indicator.centerYAnchor.constraint(equalTo: centerYAnchor)
+            arrow.centerYAnchor.constraint(equalTo: base.centerYAnchor),
+            arrow.trailingAnchor.constraint(equalTo: thumb.leadingAnchor, constant: -LayoutConfiguration.arrowMargin)
+        ])
+        NSLayoutConstraint.activate([
+            fourDots.centerYAnchor.constraint(equalTo: thumb.centerYAnchor),
+            fourDots.centerXAnchor.constraint(equalTo: thumb.centerXAnchor),
+            fourDots.widthAnchor.constraint(equalToConstant: LayoutConfiguration.fourDotsSize.width),
+            fourDots.heightAnchor.constraint(equalToConstant: LayoutConfiguration.fourDotsSize.height)
         ])
         thumbPositionConstraint.isActive = true
 
@@ -267,76 +303,60 @@ public class Switch: UIControl {
 
     private func updateVisualState() {
         thumbPositionConstraint.constant = isOn ? LayoutConfiguration.thumbOffset : -LayoutConfiguration.thumbOffset
-        indicator.isOn = isOn
+        thumbContainer.backgroundColor = isOn ?
+            thumbContainer.backgroundColor?.withAlphaComponent(0.0)
+            :
+            thumbContainer.backgroundColor?.withAlphaComponent(1.0)
     }
 
-    private func updateThumbColors() {
-        thumbSurface.colors = [thumbTintUpperLeftColor.cgColor, thumbTintLowerRightColor.cgColor]
-    }
-}
-
-/// A small indicator that imitates an LED light
-public class IndicatorView: ContainerView<UIView> {
-
-    private enum LayoutConfiguration {
-        static var size: CGSize {
-            return CGSize(width: 8, height: 8)
-        }
+    private func updateThumbColor() {
+        thumb.child?.backgroundColor = thumbTintColor
     }
 
-    /// Color in the  **On** state
-    public var onTintColor: UIColor = .green {
-        didSet {
-            updateTintColor()
-        }
-    }
-    /// Color in the  **Off** state
-    public var offTinrColor: UIColor = UIColor(red: 175.0/255.0, green: 192.0/255.0, blue: 210.0/255.0, alpha: 1.0) {
-        didSet {
-            updateTintColor()
-        }
-    }
+    private func createDot(origin: CGPoint) -> UIView {
+        let dot = ContainerView(
+            child: UIView(
+                frame: CGRect(
+                origin: origin,
+                size: LayoutConfiguration.dotSize
+                )
+            )
+        )
 
-    /// A Boolean value that determines the off/on state of the indicator.
-    public var isOn: Bool = false {
-        didSet {
-            updateTintColor()
-        }
+        dot.backgroundColor = dotColor
+        dot.bezelWidth = 1.0
+        dot.elevation = .custom(elevation: 1)
+        dot.layer.cornerRadius = LayoutConfiguration.dotSize.width / 2
+        dot.lowerRightBezelColor = UIColor(red: 178.0/255.0, green: 195.0/255.0, blue: 214.0/255.0, alpha: 1.0)
+        return dot
     }
 
-    public override var intrinsicContentSize: CGSize {
-        return LayoutConfiguration.size
-    }
+    private func getShadowPath() -> CGPath {
+        let radius = LayoutConfiguration.thumbRadius
 
-    // MARK: Initializers
+        let path = UIBezierPath()
 
-    public override init(frame: CGRect) {
-        super.init(frame: CGRect(origin: CGPoint.zero, size: LayoutConfiguration.size))
-        setUpView()
-    }
+        path.addArc(
+            withCenter: CGPoint(x: radius, y: LayoutConfiguration.thumbSize.height - radius + 2),
+            radius: radius+1,
+            startAngle: .pi,
+            endAngle: .pi / 2,
+            clockwise: false
+        )
+        path.addLine(
+            to: CGPoint(x: LayoutConfiguration.thumbSize.width - radius,
+                        y: LayoutConfiguration.thumbSize.height + 3)
+        )
+        path.addArc(
+            withCenter: CGPoint(
+                x: LayoutConfiguration.thumbSize.width - radius,
+                y: LayoutConfiguration.thumbSize.height - radius + 2),
+            radius: radius+1,
+            startAngle: .pi / 2,
+            endAngle: 0,
+            clockwise: false
+        )
 
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setUpView()
-    }
-
-    private func setUpView() {
-        // The stroke line of the indicator has the opposite reflection
-        swap(&upperLeftBezelColor, &lowerRightBezelColor)
-        swap(&upperLeftInnerShadowColor, &lowerRightInnerShadowColor)
-
-        child = UIView()
-        updateTintColor()
-
-        // There is no white shadow in the indicator
-        upperLeftInnerShadowColor = .clear
-        bezelWidth = 1
-        elevation = .custom(elevation: -1)
-
-        layer.cornerRadius = LayoutConfiguration.size.height / 2
-    }
-
-    private func updateTintColor() {
-        child?.backgroundColor = isOn ? onTintColor : offTinrColor
+        return path.cgPath
     }
 }
