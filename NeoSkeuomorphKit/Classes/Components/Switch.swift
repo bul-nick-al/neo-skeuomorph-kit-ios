@@ -71,6 +71,7 @@ public class Switch: UIControl {
         get { return _isOn }
         set {
             guard _isOn != newValue else { return }
+            _isOn = newValue
             updateVisualState()
         }
     }
