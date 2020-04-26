@@ -7,9 +7,10 @@
 
 ## Demo
 
-Container | Switch | Big Switch | Progress bar
+Container | Switch | Big Switch | Very Big Switch | Progress bar
 --- | --- | --- | ---
-![](https://github.com/bul-nick-al/neo-skeuomorph-kit-ios/blob/develop/demo/container.gif) | ![](https://github.com/bul-nick-al/neo-skeuomorph-kit-ios/blob/develop/demo/switch.gif) | ![](https://github.com/bul-nick-al/neo-skeuomorph-kit-ios/blob/develop/demo/bigSwitch.gif) | ![](https://github.com/bul-nick-al/neo-skeuomorph-kit-ios/blob/develop/demo/progress.gif)
+![](https://github.com/bul-nick-al/neo-skeuomorph-kit-ios/blob/develop/demo/container.gif) | ![](https://github.com/bul-nick-al/neo-skeuomorph-kit-ios/blob/develop/demo/switch.gif) | ![](https://github.com/bul-nick-al/neo-skeuomorph-kit-ios/blob/develop/demo/bigSwitch.gif) | ![](https://github.com/bul-nick-al/neo-skeuomorph-kit-ios/blob/develop/demo/veryBigSwitch.gif) |
+![](https://github.com/bul-nick-al/neo-skeuomorph-kit-ios/blob/develop/demo/progress.gif)
 
 <!---
 ### Container
