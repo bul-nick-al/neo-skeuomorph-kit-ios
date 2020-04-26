@@ -11,10 +11,6 @@ import NeoSkeuomorphKit
 
 class SwitchDemonstrationViewController: UIViewController {
 
-    @objc func detectSwitchToggle(_ sender: Switch) {
-        label.text = sender.isOn ? "On" : "Off"
-    }
-
     let background: CALayer = {
         let backgroud = CAGradientLayer()
         backgroud.colors = [
@@ -25,40 +21,63 @@ class SwitchDemonstrationViewController: UIViewController {
         return backgroud
     }()
 
-    lazy var label: UILabel = {
-        let label = UILabel()
-        label.text = mySwitch.isOn ? "On" : "Off"
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-
     let mySwitch: Switch = {
         let mySwitch = Switch()
         mySwitch.translatesAutoresizingMaskIntoConstraints = false
-        mySwitch.addTarget(self, action: #selector(detectSwitchToggle(_:)), for: .valueChanged)
         return mySwitch
     }()
+
+    let mySwitch2: Switch2 = {
+        let mySwitch = Switch2()
+        mySwitch.translatesAutoresizingMaskIntoConstraints = false
+        return mySwitch
+    }()
+
+    let mySwitch3: Switch3 = {
+        let mySwitch = Switch3()
+        mySwitch.translatesAutoresizingMaskIntoConstraints = false
+        return mySwitch
+    }()
+
+    let stackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .vertical
+        stackView.spacing = 15
+        return stackView
+    }()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.layer.addSublayer(background)
-        view.addSubview(mySwitch)
-        view.addSubview(label)
-        background.frame = view.bounds
+
+        let lableSwitch1 = UILabel()
+        let lableSwitch2 = UILabel()
+        let lableSwitch3 = UILabel()
+
+        lableSwitch1.text = "Switch 1"
+        lableSwitch2.text = "Switch 2"
+        lableSwitch3.text = "Switch 3"
+
+        stackView.alignment = .leading
+
+        stackView.addArrangedSubview(lableSwitch1)
+        stackView.addArrangedSubview(mySwitch)
+        stackView.addArrangedSubview(lableSwitch2)
+        stackView.addArrangedSubview(mySwitch2)
+        stackView.addArrangedSubview(lableSwitch3)
+        stackView.addArrangedSubview(mySwitch3)
+
+        view.addSubview(stackView)
 
         NSLayoutConstraint.activate([
-            mySwitch.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            mySwitch.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
-
-        NSLayoutConstraint.activate([
-            label.leadingAnchor.constraint(equalTo: mySwitch.trailingAnchor, constant: 40),
-            label.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-        ])
-
     }
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        view.layer.sublayers?[0].frame = view.bounds
+        background.frame = view.bounds
     }
 }
