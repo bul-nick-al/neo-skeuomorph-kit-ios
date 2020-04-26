@@ -10,7 +10,7 @@ import UIKit
 
 extension UIViewController {
     func popDueToSizeChange() {
-        /** This view controller was pushed in a table view while in the split view controller's
+        /*This view controller was pushed in a table view while in the split view controller's
             master table, upon rotation to expand, we want to pop this view controller (to avoid
             master and detail being the same view controller).
         */

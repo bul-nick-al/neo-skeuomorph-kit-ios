@@ -27,6 +27,12 @@ class SwitchDemonstrationViewController: UIViewController {
         return mySwitch
     }()
 
+    let mySwitch2: Switch2 = {
+        let mySwitch = Switch2()
+        mySwitch.translatesAutoresizingMaskIntoConstraints = false
+        return mySwitch
+    }()
+
     let mySwitch3: Switch3 = {
         let mySwitch = Switch3()
         mySwitch.translatesAutoresizingMaskIntoConstraints = false
@@ -44,12 +50,25 @@ class SwitchDemonstrationViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.layer.addSublayer(background)
-        view.addSubview(stackView)
 
+        let lableSwitch1 = UILabel()
+        let lableSwitch2 = UILabel()
+        let lableSwitch3 = UILabel()
+
+        lableSwitch1.text = "Switch 1"
+        lableSwitch2.text = "Switch 2"
+        lableSwitch3.text = "Switch 3"
+
+        stackView.alignment = .leading
+
+        stackView.addArrangedSubview(lableSwitch1)
         stackView.addArrangedSubview(mySwitch)
+        stackView.addArrangedSubview(lableSwitch2)
+        stackView.addArrangedSubview(mySwitch2)
+        stackView.addArrangedSubview(lableSwitch3)
         stackView.addArrangedSubview(mySwitch3)
 
-        background.frame = view.bounds
+        view.addSubview(stackView)
 
         NSLayoutConstraint.activate([
             stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -59,6 +78,6 @@ class SwitchDemonstrationViewController: UIViewController {
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        view.layer.sublayers?[0].frame = view.bounds
+        background.frame = view.bounds
     }
 }
