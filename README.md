@@ -1,5 +1,9 @@
 # NeoSkeuomorphKit
 
+## Description
+
+An alternative UIKit for iOS apps designed in the Neo Skeumorphic style. The mock ups are taken from [here](https://www.figma.com/file/J1uPSOY5k577mDpSfGFven/Neomorphism-Guide-2.0-Original?node-id=0%3A1)
+
 [![CI Status](https://img.shields.io/travis/Nikolay/NeoSkeuomorphKit.svg?style=flat)](https://travis-ci.org/Nikolay/NeoSkeuomorphKit)
 [![Version](https://img.shields.io/cocoapods/v/NeoSkeuomorphKit.svg?style=flat)](https://cocoapods.org/pods/NeoSkeuomorphKit)
 [![License](https://img.shields.io/cocoapods/l/NeoSkeuomorphKit.svg?style=flat)](https://cocoapods.org/pods/NeoSkeuomorphKit)
